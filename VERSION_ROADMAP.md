@@ -47,28 +47,33 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 ## Phase 3: Frontend Implementation
 
 ### v0.2 - Frontend Shell
-**Goal:** Next.js app scaffolding, routing, auth UI (no backend wire-up)  
+**Goal:** Expo app scaffolding with React Native, routing, auth UI (no backend wire-up)  
 **Deliverables:**
-- Next.js 14 App Router project initialized
-- Supabase Auth UI components (login, signup, password reset)
-- Layout with navigation
-- Protected route middleware
-- Tailwind configured per design system
+- Expo SDK 52+ project initialized (iOS, Android, Web targets)
+- Expo Router configured (file-based routing)
+- Supabase React Native SDK integrated
+- Auth screens (login, signup, password reset) with React Native components
+- Layout with navigation (tab/stack navigators)
+- Protected route middleware (Expo Router auth guards)
+- NativeWind configured per design system tokens
+- Verified on: iOS Simulator/Android Emulator/Web browser
 
-**Estimate:** 5-8h  
+**Estimate:** 7-10h (Expo setup, native navigation patterns, cross-platform auth flow)  
 **Status:** Pending  
 **Blocked by:** MOCKUPS APPROVED
 
 ### v0.3 - Chat UI Components
-**Goal:** Static chat panel, streaming placeholder, citation renderer  
+**Goal:** Static chat panel, streaming placeholder, citation renderer (React Native components)  
 **Deliverables:**
-- ChatPanel component with input and message list
+- ChatPanel component with TextInput and FlatList (React Native)
 - StreamingMessage component (simulated streaming with mock data)
-- CitationRenderer component (numbered superscripts)
-- SourcePanel component (shows chunk when citation clicked)
+- CitationRenderer component (numbered superscripts, touchable)
+- SourcePanel component (bottom sheet or modal, shows chunk when citation tapped)
 - Empty states for all components
+- NativeWind styling matching design system
+- Touch interaction patterns (tap, swipe, scroll)
 
-**Estimate:** 4-7h  
+**Estimate:** 5-8h (React Native components, touch interactions, cross-platform layout)  
 **Status:** Pending  
 **Blocked by:** v0.2
 
@@ -85,15 +90,16 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Blocked by:** v0.3
 
 ### v0.5 - FRONTEND APPROVED
-**Goal:** All UI components working with mock data, component tests passing  
+**Goal:** All UI components working with mock data, tests passing on all platforms  
 **Deliverables:**
-- Playwright smoke tests (auth flow, chat interaction, citation clicks)
-- Vitest component tests for ChatPanel, CitationRenderer, AgentTimeline
-- Visual regression screenshots
-- No console errors
-- Responsive design verified (desktop, tablet, mobile)
+- Detox E2E tests (auth flow, chat interaction, citation taps) on iOS/Android
+- Playwright tests for web build
+- Jest/React Native Testing Library component tests
+- Visual regression screenshots (iOS, Android, web)
+- No console errors/warnings across platforms
+- Responsive design verified (mobile portrait/landscape, tablet, web desktop)
 
-**Estimate:** 4-6h  
+**Estimate:** 5-8h (Detox setup, multi-platform test verification)  
 **Status:** Pending  
 **Approval token:** `FRONTEND APPROVED`  
 **Blocked by:** v0.4
@@ -266,20 +272,23 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Blocked by:** v0.14
 
 ### v1.0 - Production Live (GO)
-**Goal:** App deployed and accessible to portfolio reviewers  
+**Goal:** App deployed on iOS, Android, and web - accessible to portfolio reviewers  
 **Deliverables:**
-- Frontend deployed (Vercel or similar)
-- Backend deployed (Railway, Render, or similar)
+- **iOS:** App submitted to TestFlight (or App Store), invite link in README
+- **Android:** App in Play Console internal testing (or production), link in README
+- **Web:** Deployed to Vercel (or similar), live URL in README
+- **Backend:** Deployed (Railway, Render, or similar)
 - Supabase production project configured
 - Production .env vars set (owner's default keys)
 - Controlled access configured (email allowlist or approval flow)
-- Live URL in README
+- EAS Build configuration (eas.json)
+- App store metadata (screenshots, descriptions, icons) for iOS/Android
 - CHANGELOG.md final entry
 - HANDOFF.md (portfolio case study document)
 - Git tag: `v1.0-production-live`
 - Public GitHub repo
 
-**Estimate:** 8-16h (4-8h × 2.0x)  
+**Estimate:** 12-20h (EAS Build setup, TestFlight/Play Console, app store metadata, multi-platform deployment coordination)  
 **Status:** Pending  
 **Approval token:** `GO`  
 **Blocked by:** v0.15
@@ -292,10 +301,10 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 |---------|-----------|----------|--------|------------|
 | v0.0 | SCOPE CONFIRMED | 4-6h | ✅ DONE (3.5h actual) | - |
 | v0.1 | MOCKUPS APPROVED | 6-10h | ✅ DONE (6h actual) | v0.0 approval |
-| v0.2 | Frontend Shell | 5-8h | Pending | v0.1 approval |
-| v0.3 | Chat UI Components | 4-7h | Pending | v0.2 |
+| v0.2 | Frontend Shell | 7-10h | Pending | v0.1 approval |
+| v0.3 | Chat UI Components | 5-8h | Pending | v0.2 |
 | v0.4 | Agent Timeline UI | 3-5h | Pending | v0.3 |
-| v0.5 | FRONTEND APPROVED | 4-6h | Pending | v0.4 |
+| v0.5 | FRONTEND APPROVED | 5-8h | Pending | v0.4 |
 | v0.6 | TESTS APPROVED | 10-16h | Pending | v0.5 approval |
 | v0.7 | Backend Foundation | 4-6h | Pending | v0.6 approval |
 | v0.8 | LangGraph Agent DAG | 5-8h | Pending | v0.7 |
@@ -306,10 +315,10 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 | v0.13 | Docker Compose Polish | 3-5h | Pending | v0.12 |
 | v0.14 | CI/CD Pipeline | 3-5h | Pending | v0.13 |
 | v0.15 | Multi-Provider BYOK + Settings | 6-9h | Pending | v0.14 |
-| v1.0 | Production Live (GO) | 8-16h | Pending | v0.15 |
+| v1.0 | Production Live (GO) | 12-20h | Pending | v0.15 |
 
 **Total gates:** 17  
-**Total estimated hours:** 86-147h (with 2.0x calibration multiplier applied to raw estimates)
+**Total estimated hours:** 94-159h (with 2.0x calibration multiplier + Expo multi-platform overhead)
 
 ---
 

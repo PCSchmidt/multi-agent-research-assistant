@@ -185,4 +185,56 @@ Each entry: decision made, why it was made, what alternatives were considered, c
 
 ---
 
+## Decision 8: Expo (React Native + Web) over Next.js
+
+**Date:** 2026-05-09  
+**Context:** Frontend stack selection at v0.2 gate (before any code written). User requirement: app must work on mobile phones and eventually ship to Apple App Store and Google Play Store.
+
+**Decision:** Use Expo Router (React Native for Web + iOS + Android) instead of Next.js. One codebase compiles to three platforms.
+
+**Why:**
+
+- **Portfolio differentiation:** "Shipped to iOS, Android, and web from one codebase" signals broader platform expertise
+- **Mobile-first requirement:** App must work on phones (not just responsive web), with eventual native app store presence
+- **Timing is perfect:** v0.2 is the first frontend gate - no code exists yet, so pivot cost is minimal
+- **Expo maturity:** Expo Router now matches Next.js App Router feature parity (file-based routing, layouts, server actions via API routes)
+- **NativeWind:** Tailwind CSS for React Native maintains design system compatibility
+- **Supabase support:** Supabase React Native SDK is production-ready
+
+**Alternatives considered:**
+
+- **Next.js + PWA:** Works on mobile browsers, installable, but no true native APIs (limited camera, biometrics, push notifications). No app store presence.
+- **Next.js web + separate React Native app:** Two codebases (2x maintenance, divergence risk). Estimate: +30-50h duplicate work.
+- **Flutter:** Different language (Dart), steeper learning curve, less relevant to portfolio (JavaScript/TypeScript focus).
+
+**Consequences:**
+
+- **Estimate adjustments:**
+  - v0.2 (Frontend Shell): 5-8h → 7-10h (+Expo setup, navigation, Supabase RN SDK)
+  - v0.3 (Chat UI): 4-7h → 5-8h (React Native components, NativeWind patterns)
+  - v0.5 (Frontend Approved): 4-6h → 5-8h (Detox for native E2E testing)
+  - v1.0 (Production Live): 8-16h → 12-20h (+EAS Build, TestFlight, Play Console, app store metadata)
+  - **Total increase:** +10-15h across all frontend gates
+- **Tech stack changes:**
+  - Frontend framework: Next.js 14 → Expo SDK 52+ with Expo Router
+  - Styling: Tailwind CSS → NativeWind (Tailwind for React Native)
+  - Navigation: Next.js App Router → Expo Router (file-based routing, same pattern)
+  - Auth: Supabase JS → Supabase React Native SDK
+  - Testing: Playwright → Detox (native E2E), Vitest still for component tests
+  - Deployment: Vercel → EAS Build (Expo Application Services) for native builds, Vercel for web build
+- **Development environment:**
+  - Requires iOS Simulator (Xcode on Mac) or Android Emulator for testing
+  - Web testing still works in browser (React Native for Web)
+  - EAS Build handles cloud builds (no local Xcode/Android Studio required for production)
+- **Portfolio signal upgraded:** Demonstrates cross-platform mobile expertise, not just web development
+
+**Migration path (for reference):**
+
+- Design system already uses Tailwind → NativeWind maps 1:1 for most utilities
+- Component patterns (cards, buttons, inputs) translate cleanly to React Native primitives
+- FastAPI backend unchanged (still uses REST/SSE endpoints)
+- LangGraph agent architecture unchanged
+
+---
+
 **Last updated:** 2026-05-09

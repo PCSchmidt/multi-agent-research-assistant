@@ -2,9 +2,9 @@
 # Current Gate Specification
 
 ## Current Version: v0.2
-**Gate:** Frontend Shell  
+**Gate:** Frontend Shell (Expo - React Native + Web)  
 **Status:** Pending GO approval  
-**Estimate:** 5-8h
+**Estimate:** 7-10h (updated for Expo multi-platform setup)
 
 ---
 
@@ -19,31 +19,36 @@
 **Actual hours:** 3.5h (estimated 4-6h, -13% variance)
 
 ## Goal
-Build Next.js scaffolding with Supabase auth, layout, and protected routes (no backend wire-up yet).
+Build Expo (React Native) scaffolding with Supabase auth, navigation, and protected routes targeting iOS, Android, and Web (no backend wire-up yet).
 
 ## Deliverables
-- [ ] Next.js 14 project initialized (App Router, TypeScript, Tailwind)
-- [ ] Supabase client SDK configured
-- [ ] Auth components (LoginPage, SignupPage, PasswordResetPage)
-- [ ] DashboardLayout with NavBar, protected route middleware
-- [ ] Design system tokens in Tailwind config (colors, fonts, spacing)
-- [ ] Empty ChatPage with layout structure (3-column grid)
-- [ ] Settings page skeleton (for BYOK later)
-- [ ] Responsive breakpoints configured
-- [ ] Basic routing verified (/login, /signup, /dashboard, /settings)
+- [ ] Expo SDK 52+ project initialized with TypeScript
+- [ ] Expo Router configured (file-based routing for iOS, Android, Web)
+- [ ] NativeWind installed and configured with design system tokens
+- [ ] Supabase React Native SDK integrated
+- [ ] Auth screens (LoginScreen, SignupScreen, PasswordResetScreen) using React Native components
+- [ ] Navigation structure (tab navigator or stack navigator)
+- [ ] Protected route middleware (Expo Router auth guards)
+- [ ] DashboardLayout with navigation bar
+- [ ] Empty ChatScreen with layout structure (React Native layout)
+- [ ] Settings screen skeleton (for BYOK later)
+- [ ] Responsive behavior tested (mobile portrait/landscape, tablet, web)
+- [ ] Verified running on iOS Simulator, Android Emulator, and web browser
+- [ ] Basic routing verified (auth screens, dashboard, settings)
 
 ## Approval Criteria
-- All routes accessible
-- Auth flow works (signup → login → protected dashboard)
-- Design system colors/fonts applied
-- No console errors
+- All screens accessible on iOS, Android, and Web
+- Auth flow works (signup → login → protected dashboard) on all platforms
+- Design system colors/fonts applied via NativeWind
+- No console errors or warnings across platforms
+- Touch interactions work correctly on mobile
 
 ## Active Tasks
-Waiting for user to type `GO` to begin frontend implementation.
+Waiting for user to type `GO` to begin Expo frontend implementation.
 
 ## Next Gate
 **v0.3 - Chat UI Components**  
-Will build: ChatPanel, MessageList, StreamingText, CitationRenderer with mock data
+Will build: ChatPanel, MessageList, StreamingText, CitationRenderer with mock data (React Native components)
 
 ---
 

@@ -3,6 +3,8 @@
 
 Design system for multi-agent-research-assistant. Portfolio-grade production UI targeting technical reviewers.
 
+**Implementation Note:** Built with Expo (React Native for iOS, Android, Web) using NativeWind (Tailwind CSS for React Native). Most Tailwind utilities map 1:1 to React Native styles. Platform-specific adjustments noted where applicable.
+
 ---
 
 ## Design Principles
@@ -381,17 +383,26 @@ Ellipsis:          … (proper ellipsis character)
 ## Responsive Breakpoints
 
 ```
-Mobile:   < 640px   (sm)
-Tablet:   ≥ 640px   (md)
-Desktop:  ≥ 1024px  (lg)
-Wide:     ≥ 1280px  (xl)
+Mobile:   < 640px   (sm)   [iOS/Android native]
+Tablet:   ≥ 640px   (md)   [iPad, Android tablets]
+Desktop:  ≥ 1024px  (lg)   [Web build]
+Wide:     ≥ 1280px  (xl)   [Web build, large displays]
 ```
 
 ### Layout Behavior
 ```
-Mobile:   Single column, collapsible source panel (modal)
-Tablet:   Two columns (chat + timeline), source panel overlays
-Desktop:  Three columns (chat | timeline | source panel)
+Mobile (iOS/Android):  Single column, bottom sheet for source panel
+Tablet:                Two columns (chat + timeline), source panel as drawer
+Desktop (Web):         Three columns (chat | timeline | source panel)
+```
+
+### Platform-Specific Notes (React Native)
+```
+- Shadow: iOS uses shadow props, Android uses elevation
+- Typography: System fonts (San Francisco on iOS, Roboto on Android) with fallbacks
+- Touch targets: Minimum 44px × 44px (iOS HIG), 48px × 48px (Material Design)
+- Safe areas: Use SafeAreaView for iOS notch/home indicator
+- Haptics: Optional vibration feedback on button presses (mobile only)
 ```
 
 ---

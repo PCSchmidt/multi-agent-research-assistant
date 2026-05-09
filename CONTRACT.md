@@ -29,10 +29,11 @@ Fills identified portfolio gap: visible multi-agent work with evals and observab
 ## Tech Stack (Non-Negotiable)
 
 ### Frontend
-- Next.js 14+ (App Router)
+- Expo SDK 52+ with Expo Router (React Native for iOS, Android, Web)
 - TypeScript (strict mode)
-- Tailwind CSS
+- NativeWind (Tailwind CSS for React Native)
 - Server-Sent Events (SSE) for streaming responses
+- EAS Build for native app compilation
 
 ### Backend
 - FastAPI (Python 3.11+)
@@ -52,9 +53,9 @@ Fills identified portfolio gap: visible multi-agent work with evals and observab
 - RLS: Row-level security on all tables
 
 ### Infrastructure
-- Local dev: Docker Compose
+- Local dev: Docker Compose (backend), Expo Go (frontend)
 - CI/CD: GitHub Actions
-- Deployment: TBD at deployment gate (likely Vercel frontend + Railway/Render backend)
+- Deployment: EAS Build (iOS/Android native apps) + Vercel (web) + Railway/Render (backend)
 
 ## Database Schema (MVP)
 
@@ -152,14 +153,17 @@ SUPABASE_SERVICE_ROLE_KEY # Admin key (backend only)
 ```
 
 ## Success Criteria (v1.0 Production Live)
-1. Live deployed URL accessible to portfolio reviewers
-2. Working auth flow (email signup/login with controlled access)
+1. Live deployed on three platforms:
+   - iOS app in TestFlight (or App Store)
+   - Android app in Play Console (internal testing or production)
+   - Web app URL accessible to portfolio reviewers
+2. Working auth flow (email signup/login with controlled access) on all platforms
 3. End-to-end query → streamed cited answer working
 4. RAGAS eval scores visible in UI
 5. LangSmith traces accessible for all agent runs
 6. **Multi-provider BYOK working** (Settings page, encrypted storage, provider switching)
-7. All tests passing in CI
-8. README with setup-from-clone instructions
+7. All tests passing in CI (unit, integration, native E2E)
+8. README with setup-from-clone instructions (web + iOS + Android dev setup)
 9. GitHub repo public with clean commit history
 
 ---
