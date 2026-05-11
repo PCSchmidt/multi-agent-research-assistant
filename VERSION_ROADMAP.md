@@ -135,80 +135,99 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Goal:** FastAPI scaffold, Supabase schema, health check  
 **Deliverables:**
 - FastAPI app with /health endpoint
-- Supabase schema migration (users, research_sessions, sources, eval_logs)
-- pgvector extension enabled
+- Supabase schema migration (users, research_sessions, papers, eval_logs)
+- pgvector extension enabled (for local canonical corpus)
 - Supabase client initialized (Python SDK)
 - Environment variable validation on startup
 - Docker Compose with FastAPI + Supabase (local dev)
+- Cost tracking middleware (log LLM calls, token usage per request)
 
 **Estimate:** 4-6h  
 **Status:** Pending  
 **Blocked by:** TESTS APPROVED
 
-### v0.8 - LangGraph Agent DAG
-**Goal:** Agent state graph wired, nodes stubbed  
+### v0.8 - ReAct Agent + Academic API Tools
+**Goal:** LangGraph ReAct agent with academic search tools working  
 **Deliverables:**
-- ResearchState Pydantic model (query, sub_questions, chunks, answer, citations, eval_scores)
-- LangGraph StateGraph with five nodes (plan, retrieve, critique, synthesize, eval)
-- Each node accepts state, returns updated state
-- Nodes stubbed with TODO comments (no LLM calls yet)
-- Graph compilation verified (no cycles, proper edges)
+- ResearchState Pydantic model (query, papers, synthesis, citations, eval_scores)
+- LangGraph agent with tool-calling capability (ReAct pattern)
+- **Tools implemented:**
+  - `search_semantic_scholar(query, year_range, limit)` - S2 API integration
+  - `search_arxiv(query, category, limit)` - arXiv API integration
+  - `get_paper_details(paper_id)` - fetch abstract, citations, venue, authors
+  - `search_local_corpus(query)` - pgvector search over canonical papers
+  - `synthesize_findings()` - trigger synthesis when ready
+- API key management (S2 API key, arXiv no auth needed)
+- Tool execution verified (can fetch real paper metadata)
+- **Cost caps in middleware:** max 5 papers/query, max 10 LLM calls/query, circuit breaker
 
-**Estimate:** 5-8h  
+**Estimate:** 7-10h  
 **Status:** Pending  
 **Blocked by:** v0.7
 
-### v0.9 - Planner + Synthesizer Nodes
-**Goal:** LLM-powered planning and synthesis working  
+### v0.9 - Hybrid Retrieval + Paper Ingestion
+**Goal:** Combine live academic search with local canonical corpus  
 **Deliverables:**
-- Planner node: query → sub_questions (Claude Sonnet with structured output)
-- Synthesizer node: filtered_chunks → cited answer (Claude Sonnet with streaming)
-- FastAPI streaming endpoint (/api/research/stream) using SSE
-- Frontend wired to SSE endpoint (real streaming, not mock)
-- Citation format: [1], [2], etc. with source mapping
+- **Live search:** Agent can search S2/arXiv for recent papers (2022-2024)
+- **Local corpus:** pgvector search over pre-seeded canonical works
+- **Hybrid merge logic:** Combine results by relevance, recency, citation count
+- **CLI ingestion script:** Feed canonical papers (PDF → extract abstract/metadata → embed → pgvector)
+- Seed local corpus with 20-50 canonical papers (foundational works, highly-cited surveys)
+- OpenAI embeddings integration (text-embedding-3-small)
+- End-to-end retrieval working: query → tool calls → hybrid results (live + local)
 
-**Estimate:** 6-10h  
+**Estimate:** 7-10h  
 **Status:** Pending  
-**Blocked by:** v0.8
-
-### v0.10 - Vector Retrieval + Critic
-**Goal:** Semantic search and chunk filtering working  
-**Deliverables:**
-- Document ingestion CLI script (text files → embeddings → pgvector)
-- Retriever node: sub_questions → pgvector cosine similarity search → top-k chunks
-- Critic node: chunks → relevance scoring → filtered_chunks
-- Seed vector store with 50-100 sample chunks (research papers, docs, etc.)
-- End-to-end flow working: query → plan → retrieve → critique → synthesize → streamed answer
-
-**Estimate:** 7-12h  
-**Status:** Pending  
-**Blocked by:** v0.9  
+**Blocked by:** v0.8  
 **Note:** Requires real OpenAI API key (replace OpenRouter key before this gate)
 
-### v0.11 - RAGAS Evaluation
-**Goal:** Eval pipeline running, scores logged  
+### v0.10 - Synthesis + Streaming
+**Goal:** Agent synthesizes findings and streams cited answer  
 **Deliverables:**
-- Evaluator node (async): answer + chunks → RAGAS metrics
-- RAGAS metrics: faithfulness, answer_relevancy, context_precision
-- Metrics logged to Supabase eval_logs table
-- EvalBadge in UI shows real scores from DB
-- Seeded test set evaluated, all thresholds met (≥ 0.75, ≥ 0.70, ≥ 0.65)
-- Pytest tests for RAGAS pipeline reproducibility
+- Synthesis logic: papers (abstracts + metadata) → cited answer with proper attribution
+- Citation format: [1], [2] with source mapping (title, authors, year, venue, link)
+- FastAPI streaming endpoint (/api/research/stream) using SSE
+- Frontend wired to SSE endpoint (real streaming, not mock)
+- Agent decision-making: decides when to search more vs. synthesize
+- Error handling: rate limits, API failures, no results found
 
-**Estimate:** 5-8h  
+**Estimate:** 6-9h  
+**Status:** Pending  
+**Blocked by:** v0.9
+
+### v0.11 - Evaluation (RAGAS + Manual Rubric)
+**Goal:** Eval pipeline for both local corpus (RAGAS) and live research (manual rubric)  
+**Deliverables:**
+- **RAGAS evaluation (local pgvector corpus only):**
+  - Evaluator async task: answer + chunks → faithfulness, answer_relevancy, context_precision
+  - Seeded test set (10 queries) for local corpus, thresholds: ≥ 0.75, ≥ 0.70, ≥ 0.65
+  - Logged to Supabase eval_logs table
+- **Manual eval rubric (live academic search):**
+  - Citation accuracy: Do cited papers support claims? (manual check)
+  - Recency: Includes recent papers when relevant? (automated metric)
+  - Coverage: Misses obvious seminal works? (manual check)
+  - Source diversity: Multiple perspectives vs. echo chamber? (automated metric)
+  - Test set: 10 academic queries across domains (ML, medicine, physics)
+- EvalBadge in UI shows RAGAS scores (local) + manual quality rating (live)
+- Pytest tests for RAGAS reproducibility
+
+**Estimate:** 6-9h  
 **Status:** Pending  
 **Blocked by:** v0.10
 
-### v0.12 - LangSmith Integration
-**Goal:** Agent traces visible in LangSmith dashboard  
+### v0.12 - LangSmith Integration + Cost Analytics
+**Goal:** Agent traces visible in LangSmith, cost tracking dashboard  
 **Deliverables:**
 - LangSmith tracing enabled (LANGCHAIN_TRACING_V2=true)
-- All LangGraph nodes tagged with metadata (node name, user_id, session_id)
+- All agent tool calls tagged with metadata (user_id, session_id, query, tools_used)
 - Traces appearing in LangSmith project "multi-agent-research-assistant"
 - Trace links logged to Supabase research_sessions table
+- **Cost analytics dashboard:** tokens used, LLM calls, cost per query, daily spend
+- Budget alerts (email if daily spend > $10)
+- Rate limiting verified (10 queries/hour on default keys)
 - LangSmith dashboard screenshot in README
 
-**Estimate:** 3-5h  
+**Estimate:** 4-6h  
 **Status:** Pending  
 **Blocked by:** v0.11
 
@@ -301,32 +320,35 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 |---------|-----------|----------|--------|------------|
 | v0.0 | SCOPE CONFIRMED | 4-6h | ✅ DONE (3.5h actual) | - |
 | v0.1 | MOCKUPS APPROVED | 6-10h | ✅ DONE (6h actual) | v0.0 approval |
-| v0.2 | Frontend Shell | 7-10h | Pending | v0.1 approval |
-| v0.3 | Chat UI Components | 5-8h | Pending | v0.2 |
+| v0.2 | Frontend Shell | 7-10h | ✅ DONE (~8h actual) | v0.1 approval |
+| v0.3 | Chat UI Components | 5-8h | Pending | v0.2 approval |
 | v0.4 | Agent Timeline UI | 3-5h | Pending | v0.3 |
 | v0.5 | FRONTEND APPROVED | 5-8h | Pending | v0.4 |
 | v0.6 | TESTS APPROVED | 10-16h | Pending | v0.5 approval |
 | v0.7 | Backend Foundation | 4-6h | Pending | v0.6 approval |
-| v0.8 | LangGraph Agent DAG | 5-8h | Pending | v0.7 |
-| v0.9 | Planner + Synthesizer | 6-10h | Pending | v0.8 |
-| v0.10 | Vector Retrieval + Critic | 7-12h | Pending | v0.9 |
-| v0.11 | RAGAS Evaluation | 5-8h | Pending | v0.10 |
-| v0.12 | LangSmith Integration | 3-5h | Pending | v0.11 |
+| v0.8 | ReAct Agent + Academic APIs | 7-10h | Pending | v0.7 |
+| v0.9 | Hybrid Retrieval + Ingestion | 7-10h | Pending | v0.8 |
+| v0.10 | Synthesis + Streaming | 6-9h | Pending | v0.9 |
+| v0.11 | Evaluation (RAGAS + Manual) | 6-9h | Pending | v0.10 |
+| v0.12 | LangSmith + Cost Analytics | 4-6h | Pending | v0.11 |
 | v0.13 | Docker Compose Polish | 3-5h | Pending | v0.12 |
 | v0.14 | CI/CD Pipeline | 3-5h | Pending | v0.13 |
 | v0.15 | Multi-Provider BYOK + Settings | 6-9h | Pending | v0.14 |
 | v1.0 | Production Live (GO) | 12-20h | Pending | v0.15 |
 
 **Total gates:** 17  
-**Total estimated hours:** 94-159h (with 2.0x calibration multiplier + Expo multi-platform overhead)
+**Total estimated hours (raw):** 65-95h  
+**With 2.0x calibration multiplier:** 130-190h  
+**Architecture:** Academic Research Assistant (live API search + local canonical corpus, abstract-based synthesis)
 
 ---
 
 ## Variance Drivers (High Uncertainty Gates)
 
-- **v0.6 TESTS APPROVED** (range: 10-16h) - First time defining RAGAS eval strategy; test set creation and threshold tuning can vary significantly
-- **v0.10 Vector Retrieval + Critic** (range: 7-12h) - pgvector setup and tuning, chunk re-ranking logic, potential retrieval quality iterations
-- **v1.0 Production Live** (range: 8-16h) - Deployment platform unknowns, environment config debugging, DNS/SSL setup
+- **v0.6 TESTS APPROVED** (range: 10-16h) - First time defining manual eval rubric for academic research; test set creation across domains (ML, medicine, physics) can vary
+- **v0.8 ReAct Agent + Academic APIs** (range: 7-10h) - Semantic Scholar/arXiv API integration, rate limit handling, cost cap middleware tuning
+- **v0.9 Hybrid Retrieval** (range: 7-10h) - Merge logic for live + local results, relevance ranking, canonical corpus curation
+- **v1.0 Production Live** (range: 12-20h) - EAS Build (iOS/Android), TestFlight/Play Console setup, multi-platform deployment coordination
 
 All other gates have tighter ranges (±2-3h) reflecting clearer scope.
 

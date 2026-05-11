@@ -237,4 +237,68 @@ Each entry: decision made, why it was made, what alternatives were considered, c
 
 ---
 
-**Last updated:** 2026-05-09
+## Decision 9: Academic Research Assistant scope (Abstract-based, not full PDF reading)
+
+**Date:** 2026-05-10  
+**Context:** User requested pivot from "local vector retrieval Q&A" to "PhD/postdoc-level academic research" capability. Original scope: simple Planner → Retriever → Critic → Synthesizer pipeline over pre-seeded local corpus. New requirement: must search live academic databases, fetch papers, do multi-hop reasoning.
+
+**Critical-thinker pressure-test invoked:** Flagged serious cost scaling issues ($500-$2000/month at moderate usage), complexity creep (citation graphs, full PDF parsing), wrong eval framework (RAGAS doesn't fit live research), and 200-300h estimate risk.
+
+**Decision:** Build "Academic Research Assistant" (not "PhD-level researcher") with these constraints:
+- **Search live academic databases:** Semantic Scholar API + arXiv API (metadata + abstracts)
+- **Hybrid retrieval:** Live search (recent papers 2022-2024) + local pgvector (canonical foundational works)
+- **Abstract-only reading:** Read abstracts + metadata, NOT full PDF parsing (defer to v2.0)
+- **ReAct-style agent:** Single LangGraph node with tools, not multi-node pipeline
+- **Hard cost caps:** Max 5 papers/query, max 10 LLM calls/query, rate limits on default keys
+- **Manual eval rubric:** Citation accuracy, recency, coverage (instead of pure RAGAS)
+- **Estimate target:** 130-180h (with 2.0x calibration)
+
+**Why:**
+- **Cost control:** Abstract reading costs $0.10-0.30/query vs. $0.50-$2.00 for full PDF reading (10x reduction)
+- **No paywall problem:** All APIs provide abstracts free; 50-70% of papers are paywalled for full text
+- **Faster implementation:** Avoid PDF parsing rabbit hole (formatting, figures, equations, scanned images)
+- **Portfolio signal maintained:** Still demonstrates API integration, hybrid retrieval, multi-source synthesis, academic domain expertise
+- **Realistic scope:** "Academic research assistant" is achievable for v1.0; "PhD-level researcher" is a multi-year product
+
+**Alternatives considered:**
+1. **Full PhD-level research (original request):** Full PDF reading, citation graph traversal, multi-hop iterative refinement
+   - Rejected: 200-300h estimate, uncontrolled costs, paywall failures, complexity creep
+2. **Keep original local-only scope:** Simple pgvector retrieval over pre-seeded corpus
+   - Rejected: Doesn't meet user's need for live academic research capability
+3. **Abstract + introduction/conclusion sections:** Middle ground between abstract-only and full PDF
+   - Deferred to v2.0: Adds paywall complexity, still requires PDF parsing
+
+**Consequences:**
+- ✅ Cost per query controlled: $0.10-0.30 (sustainable on default keys with rate limits)
+- ✅ No paywall failures: All abstracts are freely available
+- ✅ Faster backend implementation: Skip PDF parsing complexity
+- ✅ Estimate remains reasonable: 130-180h vs. original 94-159h (minor increase)
+- ⚠️ Reduced depth: Can't analyze methodology/results sections in detail (only abstract-level synthesis)
+- ⚠️ Manual eval required: RAGAS only works for local pgvector corpus, not live search
+- 🔄 Deferred to v2.0: Full PDF reading (open-access only), citation graph traversal, multi-hop refinement
+
+**Implementation notes:**
+- **Tools for ReAct agent:**
+  - `search_semantic_scholar(query, year_range, limit)` - recent papers
+  - `search_arxiv(query, category, limit)` - preprints
+  - `get_paper_details(paper_id)` - fetch abstract, citations, venue
+  - `search_local_corpus(query)` - pgvector for canonical works
+  - `synthesize_findings()` - generate cited answer
+- **Cost caps enforced in FastAPI middleware:**
+  - 5 papers max per query (hard limit)
+  - 10 LLM calls max per query (circuit breaker)
+  - 10 queries/hour/user on default keys (rate limit)
+  - Budget alert if daily spend > $10
+- **Eval strategy:**
+  - RAGAS (faithfulness, answer relevancy, context precision) on local pgvector corpus
+  - Manual rubric for live search: citation accuracy, recency, coverage, source diversity
+  - Test set: 10 academic queries across domains (ML, medicine, physics)
+
+**Roadmap impact:**
+- v0.7-v0.12 gates redesigned for academic research architecture
+- TESTS APPROVED (v0.6) criteria updated for manual eval rubric
+- Possibly frontend adjustments for paper list UI, abstract display (minor)
+
+---
+
+**Last updated:** 2026-05-10

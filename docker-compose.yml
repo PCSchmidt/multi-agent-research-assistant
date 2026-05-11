@@ -1,0 +1,51 @@
+# Docker Compose for local development
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: research-assistant-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      # Mount code for hot-reload in development
+      - ./backend/app:/app/app:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - research-net
+
+  # Frontend (Expo web)
+  # Note: For mobile development, run `npm start` in frontend/ instead
+  frontend:
+    image: node:20-slim
+    container_name: research-assistant-frontend
+    working_dir: /app
+    ports:
+      - "8081:8081"  # Expo web
+    volumes:
+      - ./frontend:/app
+    command: bash -c "npm install && npm run web"
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    networks:
+      - research-net
+    depends_on:
+      - backend
+
+networks:
+  research-net:
+    driver: bridge
+
+# NOTE: This setup assumes Supabase Cloud is configured via SUPABASE_URL in .env
+# For fully local development with Supabase, see: https://supabase.com/docs/guides/cli/local-development
