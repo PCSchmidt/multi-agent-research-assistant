@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from app.models.research import Paper, Author
 from app.config import settings
 
-ARXIV_API_BASE = "http://export.arxiv.org/api/query"
+ARXIV_API_BASE = "https://export.arxiv.org/api/query"
 
 
 async def search_arxiv(
@@ -48,7 +48,7 @@ async def search_arxiv(
         "sortOrder": "descending",
     }
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
         response = await client.get(ARXIV_API_BASE, params=params)
         response.raise_for_status()
 

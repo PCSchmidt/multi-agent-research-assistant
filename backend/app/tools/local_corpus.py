@@ -2,7 +2,7 @@
 
 from openai import AsyncOpenAI
 from app.models.research import Paper, Author
-from app.db.client import get_supabase_client
+from app.db.client import get_supabase_admin_client  # Use admin client for v0.8-v0.9 testing (bypasses RLS)
 from app.config import settings
 
 # Initialize OpenAI client for embeddings
@@ -36,7 +36,7 @@ async def search_local_corpus(
     embedding = await _embed_text(query)
 
     # Search using pgvector function
-    supabase = get_supabase_client()
+    supabase = get_supabase_admin_client()
 
     result = supabase.rpc(
         "search_canonical_papers",

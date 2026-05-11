@@ -2,18 +2,26 @@
 
 from datetime import datetime
 from uuid import uuid4
+import json
+from contextvars import ContextVar
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
 from app.agent.state import ResearchState
 from app.config import settings
-from app.models.research import Paper, AgentStatus
+from app.models.research import Paper, AgentStatus, Author
 from app.tools.semantic_scholar import search_semantic_scholar
 from app.tools.arxiv_search import search_arxiv
 from app.tools.local_corpus import search_local_corpus
+
+
+# Module-level storage for papers during tool execution
+# This allows tools to store Paper objects while returning formatted text to LLM
+# Using a simple list since LangGraph tools run sequentially (not concurrently)
+_paper_storage: list[Paper] = []
 
 
 # Define tools with LangChain @tool decorator
@@ -30,6 +38,10 @@ async def search_s2_tool(query: str, year_range: str | None = None) -> str:
         JSON string with paper results
     """
     papers = await search_semantic_scholar(query, year_range=year_range, limit=5)
+
+    # Store papers for hybrid merge
+    _paper_storage.extend(papers)
+
     return _format_papers_for_llm(papers)
 
 
@@ -46,6 +58,10 @@ async def search_arxiv_tool(query: str, category: str | None = None) -> str:
         JSON string with paper results
     """
     papers = await search_arxiv(query, category=category, limit=5)
+
+    # Store papers for hybrid merge
+    _paper_storage.extend(papers)
+
     return _format_papers_for_llm(papers)
 
 
@@ -61,6 +77,10 @@ async def search_local_tool(query: str) -> str:
         JSON string with paper results
     """
     papers = await search_local_corpus(query, limit=5)
+
+    # Store papers for hybrid merge
+    _paper_storage.extend(papers)
+
     return _format_papers_for_llm(papers)
 
 
@@ -166,6 +186,49 @@ def create_research_agent() -> StateGraph:
     # Define tool execution node
     tool_node = ToolNode(tools)
 
+    # Define paper extraction node (runs after tools to collect papers)
+    async def extract_papers_node(state: ResearchState) -> ResearchState:
+        """
+        Extract papers from tool results and merge them.
+
+        Implements hybrid retrieval: combines S2, arXiv, and local corpus results.
+        """
+        # Get papers from storage (populated during tool execution)
+        new_papers = _paper_storage.copy()
+
+        # Combine with existing papers from state
+        all_papers = state.get("papers", []) + new_papers
+
+        # Clear storage for next iteration
+        _paper_storage.clear()
+
+        # Deduplicate papers by paper_id (prefer first occurrence)
+        seen_ids = set()
+        unique_papers = []
+        for paper in all_papers:
+            if paper.paper_id not in seen_ids:
+                seen_ids.add(paper.paper_id)
+                unique_papers.append(paper)
+
+        # Sort by: relevance score (desc), then citation count (desc), then year (desc)
+        # This prioritizes: local corpus matches > highly cited > recent
+        unique_papers.sort(
+            key=lambda p: (
+                p.relevance_score or 0,  # Local corpus papers have this
+                p.citation_count or 0,   # All papers have this
+                p.year or 0,             # Prefer recent papers
+            ),
+            reverse=True,
+        )
+
+        # Limit to max papers
+        unique_papers = unique_papers[:settings.max_papers_per_query]
+
+        return {
+            **state,
+            "papers": unique_papers,
+        }
+
     # Define router
     def should_continue_routing(state: ResearchState) -> str:
         """Route to tools or end based on agent decision."""
@@ -181,6 +244,7 @@ def create_research_agent() -> StateGraph:
     # Add nodes
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node)
+    workflow.add_node("extract_papers", extract_papers_node)
 
     # Set entry point
     workflow.set_entry_point("agent")
@@ -194,7 +258,8 @@ def create_research_agent() -> StateGraph:
             "end": END,
         },
     )
-    workflow.add_edge("tools", "agent")
+    workflow.add_edge("tools", "extract_papers")
+    workflow.add_edge("extract_papers", "agent")
 
     # Compile
     return workflow.compile()
@@ -214,6 +279,9 @@ async def run_research_query(
     Returns:
         Final agent state with papers and synthesis
     """
+    # Clear paper storage from any previous runs
+    _paper_storage.clear()
+
     # Create agent
     agent = create_research_agent()
 
