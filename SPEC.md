@@ -241,17 +241,96 @@ Build chat UI components for academic research interface: message list, streamin
 - Agent stops after 10 LLM calls (configurable via MAX_LLM_CALLS_PER_QUERY)
 - Middleware tracks token usage in request headers
 
-**Known Limitations (to be addressed in v0.9-v0.10):**
-- Papers not properly tracked in agent state (stored in DB but not returned yet)
-- No synthesis - agent only retrieves papers
-- No streaming - full response returned at end
+**Known Limitations (addressed in v0.9):**
+
+- ~~Papers not properly tracked in agent state~~ → ✅ Fixed with hybrid merge logic
+- No synthesis - agent only retrieves papers (v0.10)
+- No streaming - full response returned at end (v0.10)
 - Placeholder user_id (auth comes later)
 
-**Next:** v0.9 - Hybrid Retrieval + Paper Ingestion (merge live + local results, CLI ingestion script)
+**Next:** v0.9 - Hybrid Retrieval + Paper Ingestion
+
+---
+
+## Current Version: v0.9
+**Gate:** HYBRID RETRIEVAL + PAPER INGESTION  
+**Status:** 🔄 85% Complete - Core functionality done, E2E verification pending  
+**Estimate:** 7-10h (with 2.0x calibration)  
+**Actual:** ~4h (significantly under estimate)
+
+## Deliverables (v0.9) - Mostly Complete
+
+- [x] Live search working (Semantic Scholar + arXiv)
+- [x] Local corpus pgvector search working
+- [x] **Hybrid merge logic implemented**
+  - Module-level paper storage mechanism
+  - Tools store Paper objects while returning text to LLM
+  - extract_papers_node: retrieves → deduplicates → sorts
+  - Sorting priority: relevance score > citation count > year
+- [x] Fixed local corpus search (admin client bypasses RLS)
+- [x] Fixed arXiv API (HTTP → HTTPS + follow_redirects)
+- [x] CLI ingestion script with 3 modes:
+  - `--file papers.json` - Ingest from JSON file
+  - `--paper-id arxiv:1706.03762` - Fetch from Semantic Scholar by ID
+  - `--seed-defaults` - Seed 5 foundational papers
+- [x] 5 canonical papers seeded with embeddings:
+  - Attention Is All You Need (Transformer, 2017)
+  - BERT (Pre-training, 2018)
+  - Longformer (Long sequences, 2020)
+  - Reformer (Efficient attention, 2020)
+  - GPT-3 (Few-shot learning, 2020)
+- [x] OpenAI embeddings integration (text-embedding-3-small, 1536-dim)
+- [x] Unit tests: 19 passing (6 hybrid merge, 6 local corpus, 7 prior)
+- [x] Integration test verifies full hybrid flow
+- [ ] E2E test with real agent (created but blocked by network connectivity)
+- [ ] Seed more papers (5/20-50 target - can add incrementally)
+
+**Files Created/Modified:**
+
+- `backend/app/agent/graph.py` - Hybrid merge logic + paper storage
+- `backend/app/tools/local_corpus.py` - Admin client fix
+- `backend/app/tools/arxiv_search.py` - HTTPS fix
+- `backend/tests/unit/test_hybrid_merge.py` - 6 unit tests
+- `backend/tests/unit/test_local_corpus.py` - 6 unit tests
+- `backend/scripts/ingest_papers.py` - CLI ingestion script
+- `.claude/hooks/enforce-tests.ps1` - Project-local test enforcement hook
+
+**Hybrid Merge Architecture:**
+
+```text
+Tool Execution:
+  search_s2_tool → papers stored in _paper_storage → formatted text to LLM
+  search_arxiv_tool → papers stored in _paper_storage → formatted text to LLM
+  search_local_tool → papers stored in _paper_storage → formatted text to LLM
+
+extract_papers_node:
+  1. Retrieve papers from _paper_storage
+  2. Deduplicate by paper_id (first occurrence wins)
+  3. Sort: relevance_score > citation_count > year
+  4. Limit to max_papers_per_query (default: 5)
+  5. Clear storage for next iteration
+```
+
+**Test Coverage:**
+
+- Hybrid merge: deduplication, sorting, accumulation, storage management
+- Local corpus: returns papers, empty results, threshold filtering, limits, embeddings, admin client
+- Integration: full hybrid flow with mocked tools
+
+**Known Limitations (to be addressed in v0.10):**
+
+- No synthesis - agent only retrieves papers
+- No streaming - full response returned at end
+- Only 5 canonical papers seeded (target: 20-50)
+- E2E test pending network availability
+
+**Next:** v0.10 - Synthesis + Streaming (cited answer generation, SSE endpoint)
+
+---
 
 ## Next Gate
-**v0.9 - HYBRID RETRIEVAL + PAPER INGESTION**  
-Combine live search (S2/arXiv) with local canonical corpus, CLI script to seed canonical papers
+**v0.10 - SYNTHESIS + STREAMING**  
+Agent synthesizes findings into cited answer, streams response via SSE
 
 ---
 

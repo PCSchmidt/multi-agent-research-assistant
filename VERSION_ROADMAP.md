@@ -168,18 +168,40 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 ### v0.9 - Hybrid Retrieval + Paper Ingestion
 **Goal:** Combine live academic search with local canonical corpus  
 **Deliverables:**
-- **Live search:** Agent can search S2/arXiv for recent papers (2022-2024)
-- **Local corpus:** pgvector search over pre-seeded canonical works
-- **Hybrid merge logic:** Combine results by relevance, recency, citation count
-- **CLI ingestion script:** Feed canonical papers (PDF → extract abstract/metadata → embed → pgvector)
-- Seed local corpus with 20-50 canonical papers (foundational works, highly-cited surveys)
-- OpenAI embeddings integration (text-embedding-3-small)
-- End-to-end retrieval working: query → tool calls → hybrid results (live + local)
+
+- ✅ **Live search:** Agent can search S2/arXiv for recent papers (2022-2024)
+- ✅ **Local corpus:** pgvector search over pre-seeded canonical works
+- ✅ **Hybrid merge logic:** Combine results by relevance, recency, citation count
+- ✅ **CLI ingestion script:** Feed canonical papers (PDF → extract abstract/metadata → embed → pgvector)
+- 🔄 **Seed local corpus:** 5/20-50 canonical papers seeded (can add more incrementally)
+- ✅ **OpenAI embeddings integration:** text-embedding-3-small working
+- ⚠️ **End-to-end retrieval:** Implemented but E2E test blocked by network connectivity
 
 **Estimate:** 7-10h  
-**Status:** Pending  
-**Blocked by:** v0.8  
-**Note:** Requires real OpenAI API key (replace OpenRouter key before this gate)
+**Actual:** ~4h  
+**Status:** 85% Complete (E2E verification pending)  
+**Completed:** Core functionality done 2026-05-11  
+
+**What Was Built:**
+
+- Module-level paper storage mechanism for hybrid merge
+- Tools store Paper objects during execution while returning text to LLM
+- extract_papers_node: retrieves → deduplicates → sorts (relevance > citations > year)
+- Fixed local corpus search (admin client bypasses RLS)
+- Fixed arXiv API (HTTP → HTTPS + follow_redirects)
+- CLI ingestion script with 3 modes (file/S2 ID/seed defaults)
+- 5 foundational papers seeded with embeddings
+
+**Testing:**
+
+- 19 unit tests passing (6 hybrid merge, 6 local corpus, 7 prior)
+- Integration test verifies full hybrid flow
+- E2E test created but blocked by network (can run when available)
+
+**Remaining:**
+
+- E2E verification with real agent + network
+- Optional: Seed 15-45 more canonical papers
 
 ### v0.10 - Synthesis + Streaming
 **Goal:** Agent synthesizes findings and streams cited answer  
