@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import analytics, health, research
+from app.api.routes import analytics, health, keys, research
 from app.config import settings
 from app.middleware.cost_tracking import CostTrackingMiddleware
 from app.middleware.rate_limiting import RateLimitMiddleware
@@ -88,6 +88,9 @@ app.include_router(research.router)
 
 # Analytics endpoints (v0.12+)
 app.include_router(analytics.router)
+
+# API key management endpoints (v0.15+)
+app.include_router(keys.router)
 
 
 @app.get("/")

@@ -3,9 +3,9 @@
 
 ## Current Version: v0.15
 **Gate:** Multi-Provider BYOK + Settings  
-**Status:** 📋 PENDING  
+**Status:** 🚧 IN PROGRESS  
 **Estimate:** 6-9h  
-**Next up:** Multi-provider key management, settings screen, provider selection  
+**Started:** 2026-05-13  
 
 ---
 
@@ -23,6 +23,39 @@
 **Status:** ✅ CLOSED  
 **Completed:** 2026-05-12  
 **Actual hours:** ~2.5h (estimated 4-6h, -40% variance)
+
+## Goal (v0.15)
+Enable users to bring their own API keys for Anthropic, OpenAI, and OpenRouter. User keys override owner's default keys. Settings UI in Expo app for key management.
+
+## Deliverables (v0.15)
+- [ ] Database schema: `user_api_keys` table with RLS policies
+  - [ ] Columns: id, user_id, provider, encrypted_key, created_at, updated_at
+  - [ ] RLS policy: users can only access their own keys
+  - [ ] pgcrypto extension enabled for encryption
+- [ ] Backend CRUD endpoints (`/api/keys`):
+  - [ ] POST /api/keys - Save/update user key
+  - [ ] GET /api/keys - List user's keys (returns provider names only, not actual keys)
+  - [ ] DELETE /api/keys/{provider} - Delete user key
+  - [ ] POST /api/keys/{provider}/test - Test key connection
+- [ ] Key hierarchy implementation:
+  - [ ] User keys override owner's default keys in config
+  - [ ] Fallback to default keys if user keys not present
+- [ ] Frontend settings screen (Expo/React Native):
+  - [ ] Provider selection (Anthropic, OpenAI, OpenRouter)
+  - [ ] API key input fields with show/hide toggle
+  - [ ] Save/test connection buttons
+  - [ ] Delete key option
+  - [ ] Settings accessible from main navigation
+- [ ] LiteLLM integration:
+  - [ ] Replace direct Anthropic/OpenAI SDK calls with LiteLLM
+  - [ ] Dynamic provider selection based on user keys
+  - [ ] Test with multiple providers
+
+## Active Tasks
+**v0.15 IN PROGRESS (2026-05-13):**
+- Starting with database schema and backend endpoints
+
+**APPROVAL TOKEN:** FRONTEND APPROVED ✅
 
 ## Goal (v0.14)
 Set up GitHub Actions CI/CD pipeline with automated testing, linting, type checking, and build verification on every push.
