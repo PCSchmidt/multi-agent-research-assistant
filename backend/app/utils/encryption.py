@@ -4,7 +4,7 @@ import base64
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from app.config import settings
 
@@ -22,7 +22,7 @@ def _get_encryption_key() -> bytes:
     # For now, use a hash of the Supabase URL as salt (deterministic but unique per project)
     salt = settings.supabase_url.encode()[:16].ljust(16, b"0")
 
-    kdf = PBKDF2(
+    kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
