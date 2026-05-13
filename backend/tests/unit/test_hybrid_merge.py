@@ -123,7 +123,7 @@ async def test_extract_papers_node_retrieves_from_storage(mock_s2_papers):
     graph._paper_storage.extend(mock_s2_papers)
 
     # Mock state
-    state = {
+    _ = {
         "messages": [],
         "query": "test",
         "papers": [],
@@ -137,7 +137,7 @@ async def test_extract_papers_node_retrieves_from_storage(mock_s2_papers):
     }
 
     # Create agent and get extract_papers_node
-    agent = graph.create_research_agent()
+    _ = graph.create_research_agent()
     # Access the node function via the workflow
     # For testing, we'll call it directly
     from app.agent.graph import create_research_agent
