@@ -115,9 +115,9 @@ async def test_test_api_key_anthropic(mock_supabase_client, mock_auth_user):
     """Test testing an Anthropic API key."""
     # Mock Supabase select to return the encrypted key
     mock_response = MagicMock()
-    mock_response.data = [{
+    mock_response.data = {
         "encrypted_key": "encrypted_anthropic_key",
-    }]
+    }
     mock_supabase_client.table.return_value.select.return_value.eq.return_value.eq.return_value.single.return_value.execute.return_value = mock_response
 
     # Mock decryption
@@ -145,9 +145,9 @@ async def test_test_api_key_invalid(mock_supabase_client, mock_auth_user):
     """Test testing an invalid API key."""
     # Mock Supabase select to return the encrypted key
     mock_response = MagicMock()
-    mock_response.data = [{
+    mock_response.data = {
         "encrypted_key": "encrypted_invalid_key",
-    }]
+    }
     mock_supabase_client.table.return_value.select.return_value.eq.return_value.eq.return_value.single.return_value.execute.return_value = mock_response
 
     # Mock decryption
