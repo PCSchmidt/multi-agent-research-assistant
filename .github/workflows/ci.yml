@@ -81,6 +81,7 @@ jobs:
           LANGCHAIN_API_KEY: test_key
           SUPABASE_URL: https://test.supabase.co
           SUPABASE_KEY: test_key
+          SUPABASE_SERVICE_ROLE_KEY: test_key
         run: |
           pytest tests/unit/ --cov=app --cov-report=term --cov-report=html
 
@@ -124,7 +125,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run eslint
         run: npm run lint || echo "Lint script not configured, skipping for now"
@@ -146,7 +147,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run TypeScript check
         run: npx tsc --noEmit
@@ -168,7 +169,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run tests
         run: npm test -- --passWithNoTests || echo "Tests blocked by React 19 compatibility, skipping for now"
@@ -190,7 +191,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build web version
         run: npx expo export --platform web

@@ -1,21 +1,17 @@
 """LangGraph research agent with ReAct pattern."""
 
-from datetime import datetime
-from uuid import uuid4
-import json
-from contextvars import ContextVar
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, ToolMessage
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
 from app.agent.state import ResearchState
 from app.config import settings
-from app.models.research import Paper, AgentStatus, Author
-from app.tools.semantic_scholar import search_semantic_scholar
+from app.models.research import AgentStatus, Author, Paper
 from app.tools.arxiv_search import search_arxiv
 from app.tools.local_corpus import search_local_corpus
+from app.tools.semantic_scholar import search_semantic_scholar
 
 
 # Module-level storage for papers during tool execution
