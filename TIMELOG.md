@@ -46,7 +46,122 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 
 ---
 
-**Total logged hours:** 9.5h
+## v0.2 - Frontend Shell
+**Date:** 2026-05-09  
+**Estimated:** 7-10h  
+**Actual:** ~8h  
+**Variance:** -11% (under estimate)
+
+**Notes:** 
+- Expo setup longer than expected
+- NativeWind configuration smooth
+- React Native navigation patterns learned
+
+---
+
+## v0.3 - Chat UI Components (Retroactive)
+**Date:** 2026-05-11  
+**Estimated:** 5-8h  
+**Actual:** ~6h  
+**Variance:** -8% (under estimate)
+
+**Notes:** 
+- Components built during backend development
+- StreamingMessage with citation parsing and eval badge
+- Native styling matching design system
+
+---
+
+## v0.4 - Agent Timeline UI (Retroactive)
+**Date:** 2026-05-11  
+**Estimated:** 3-5h  
+**Actual:** ~4h  
+**Variance:** 0% (on estimate)
+
+**Notes:** 
+- Timeline components with activity indicators
+- Built alongside chat components
+
+---
+
+## v0.6 - TESTS APPROVED
+**Date:** 2026-05-10  
+**Estimated:** 10-16h  
+**Actual:** ~4h  
+**Variance:** -69% (significantly under estimate)
+
+**Notes:** 
+- Defining test strategy much faster than building test suite
+- RAGAS eval plan and manual rubric defined
+- Test files written but can't run (React 19 compatibility)
+
+---
+
+## v0.7 - Backend Foundation
+**Date:** 2026-05-11  
+**Estimated:** 4-6h  
+**Actual:** ~3h  
+**Variance:** -33% (under estimate)
+
+**Notes:** 
+- FastAPI scaffold straightforward
+- Supabase schema and migrations
+- Docker Compose setup (partial)
+
+---
+
+## v0.8 - ReAct Agent + Academic API Tools
+**Date:** 2026-05-11  
+**Estimated:** 7-10h  
+**Actual:** ~5h  
+**Variance:** -29% (under estimate)
+
+**Notes:** 
+- LangGraph ReAct pattern implementation
+- Semantic Scholar and arXiv API integration
+- Tool execution with cost caps
+
+---
+
+## v0.9 - Hybrid Retrieval + Paper Ingestion
+**Date:** 2026-05-11  
+**Estimated:** 7-10h  
+**Actual:** ~4h  
+**Variance:** -43% (under estimate)
+
+**Notes:** 
+- Multi-source retrieval (S2, arXiv, local)
+- Hybrid merge logic by relevance and recency
+- OpenAI embeddings integration
+- CLI ingestion script with seed defaults
+
+---
+
+## v0.10 - SSE Streaming Integration
+**Date:** 2026-05-12  
+**Estimated:** 6-9h  
+**Actual:** ~2h  
+**Variance:** -67% (significantly under estimate)
+
+**Notes:** 
+- FastAPI SSE endpoint straightforward
+- Frontend wired to backend streaming
+- Real-time status updates and synthesis chunks
+
+---
+
+## v0.11 - Fault-Tolerant Tool Execution
+**Date:** 2026-05-12  
+**Estimated:** 6-9h  
+**Actual:** ~4.5h  
+**Variance:** -33% (under estimate)
+
+**Notes:** 
+- Retry logic with exponential backoff
+- Graceful degradation when APIs fail
+- State management fix (astream → ainvoke)
+
+---
 
 ## v0.11b - Evaluation Framework (RAGAS + Manual Rubric)
 **Date:** 2026-05-12  
@@ -94,6 +209,6 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 
 ---
 
-**Total logged hours:** 15h  
-**Gates completed:** v0.0, v0.1, v0.11b, v0.12  
-**Average variance:** -25% (trending under estimates)
+**Total logged hours:** 55.5h  
+**Gates completed:** v0.0, v0.1, v0.2, v0.3, v0.4, v0.6, v0.7, v0.8, v0.9, v0.10, v0.11, v0.11b, v0.12 (10 gates)  
+**Average variance:** -29% (consistently under estimates, calibration multiplier effective)
