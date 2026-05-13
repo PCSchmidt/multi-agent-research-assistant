@@ -34,3 +34,6 @@ frontend/node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code local state
+.claude/state/
