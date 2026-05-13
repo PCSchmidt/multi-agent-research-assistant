@@ -2,6 +2,7 @@
 
 > Academic research assistant powered by LangGraph, Claude Sonnet 4, and hybrid retrieval
 
+[![CI](https://github.com/PCSchmidt/multi-agent-research-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/PCSchmidt/multi-agent-research-assistant/actions/workflows/ci.yml)
 [![LangSmith](https://img.shields.io/badge/LangSmith-Tracing-blue)](https://smith.langchain.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)](https://fastapi.tiangolo.com)
 [![Expo](https://img.shields.io/badge/Expo-React%20Native-black)](https://expo.dev)
@@ -10,7 +11,7 @@
 
 An AI-powered research assistant that combines live academic search (Semantic Scholar, arXiv) with a local canonical corpus to provide cited, synthesized answers to research questions. Built with LangGraph multi-agent orchestration, evaluated with RAGAS metrics, and traced with LangSmith.
 
-**Current Status:** v0.12 - LangSmith Integration + Cost Analytics Complete ✅
+**Current Status:** v0.14 - CI/CD Pipeline In Progress 🚧
 
 ## Features
 
@@ -247,8 +248,8 @@ Seeds 5 foundational papers:
 - [x] v0.11: Fault-Tolerant Tool Execution
 - [x] v0.11b: Evaluation Framework (RAGAS + Manual Rubric)
 - [x] v0.12: LangSmith Integration + Cost Analytics
-- [ ] v0.13: Docker Compose Polish
-- [ ] v0.14: CI/CD Pipeline
+- [x] v0.13: Docker Compose Polish
+- [ ] v0.14: CI/CD Pipeline (In Progress)
 - [ ] v0.15: Multi-Provider BYOK
 - [ ] v1.0: Production Live
 

@@ -1,52 +1,48 @@
 # SPEC.md
 # Current Gate Specification
 
-## Current Version: v0.13
-**Gate:** Docker Compose Polish  
-**Status:** ✅ COMPLETE - Ready for approval  
+## Current Version: v0.14
+**Gate:** CI/CD Pipeline  
+**Status:** 🚧 IN PROGRESS  
 **Estimate:** 3-5h  
-**Actual:** ~2h (under estimate)  
+**Started:** 2026-05-13  
 
 ---
 
-## Previous Gate: v0.2 - Frontend Shell (Expo - React Native + Web)
+## Previous Gate: v0.13 - Docker Compose Polish
 **Status:** ✅ CLOSED  
-**Completed:** 2026-05-09  
-**Actual hours:** ~8h (estimated 7-10h, within estimate)
+**Completed:** 2026-05-13  
+**Actual hours:** ~2h (estimated 3-5h, -50% variance)
 
-## Previous Gate: v0.1 - MOCKUPS APPROVED
+## Previous Gate: v0.12 - LangSmith Integration + Cost Analytics
 **Status:** ✅ CLOSED  
-**Completed:** 2026-05-09  
-**Actual hours:** 6h (estimated 6-10h, -25% variance)
+**Completed:** 2026-05-12  
+**Actual hours:** ~2.5h (estimated 4-6h, -40% variance)
 
-## Previous Gate: v0.0 - SCOPE CONFIRMED
-**Status:** ✅ CLOSED  
-**Completed:** 2026-05-09  
-**Actual hours:** 3.5h (estimated 4-6h, -30% variance)
+## Goal (v0.14)
+Set up GitHub Actions CI/CD pipeline with automated testing, linting, type checking, and build verification on every push.
 
-## Goal (v0.3 - Next Gate)
-Build chat UI components for academic research interface: message list, streaming response display, citation renderer, paper details panel (React Native components with mock data).
-
-## Deliverables (v0.3) - All Complete
-- [x] ChatPanel integrated into index.tsx (React Native with TextInput and KeyboardAvoidingView)
-- [x] MessageList component with FlatList, auto-scroll, empty state
-- [x] StreamingMessage component with citation parsing, eval badges, streaming indicator
-- [x] CitationRenderer component (tappable numbered superscripts [1], [2])
-- [x] PaperDetailsPanel modal (bottom sheet showing title, authors, abstract, year, venue, citation count, source URL)
-- [x] Empty states with example queries and scholarly aesthetic
-- [x] Design system styling applied (esoteric luxury: gold accents, aged parchment tones, academic typography)
-- [x] Touch interaction patterns (tap citation → paper panel slides up, tap close → dismisses)
-- [x] Mock data structures (Paper, Message, Citation, EvalScores interfaces in types/research.ts)
-- [x] TypeScript types passing (no compilation errors)
+## Deliverables (v0.14)
+- [ ] .github/workflows/ci.yml created
+- [ ] Backend jobs configured:
+  - [ ] Lint (ruff for Python)
+  - [ ] Type check (mypy for Python)
+  - [ ] Test (pytest with coverage)
+  - [ ] Docker build verification
+- [ ] Frontend jobs configured:
+  - [ ] Lint (eslint for TypeScript)
+  - [ ] Type check (tsc --noEmit)
+  - [ ] Test (vitest if applicable, or skip if React 19 blocked)
+  - [ ] Build verification (expo build)
+- [ ] Branch protection rules configured on main branch
+- [ ] CI status badge added to README.md
+- [ ] First successful CI run verified
 
 ## Active Tasks
-**v0.5 COMPLETE (2026-05-10):**
-- TypeScript compilation clean (tsc --noEmit passes)
-- Test infrastructure ready (Jest + @testing-library/react-native installed)
-- Test files written for core components (awaiting React 19 ecosystem compatibility)
-- All UI components working with mock data
-- No runtime errors, clean console
-- Frontend approved for proceeding to backend gates
+**v0.14 IN PROGRESS (2026-05-13):**
+- Setting up GitHub Actions workflow
+- Configuring backend and frontend CI jobs
+- Adding branch protection and status badges
 
 **APPROVAL TOKEN:** FRONTEND APPROVED ✅
 
