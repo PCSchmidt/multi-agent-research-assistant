@@ -209,6 +209,26 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 
 ---
 
-**Total logged hours:** 55.5h  
-**Gates completed:** v0.0, v0.1, v0.2, v0.3, v0.4, v0.6, v0.7, v0.8, v0.9, v0.10, v0.11, v0.11b, v0.12 (10 gates)  
-**Average variance:** -29% (consistently under estimates, calibration multiplier effective)
+## v0.13 - Docker Compose Polish
+**Date:** 2026-05-13  
+**Estimated:** 3-5h  
+**Actual:** ~2h  
+**Variance:** -50% (under estimate)
+
+**Time breakdown:**
+- docker-compose.yml polish and documentation: 0.5h
+- README.md Docker Quick Start section: 0.5h
+- DOCKER.md reference guide: 0.5h
+- docker-verify.sh script: 0.25h
+- .env.example and testing documentation: 0.25h
+
+**Notes:** 
+- Foundation already existed (docker-compose.yml + Dockerfile from v0.7)
+- Mainly polish and documentation work
+- No testing needed (documented verification process instead)
+
+---
+
+**Total logged hours:** 57.5h  
+**Gates completed:** v0.0, v0.1, v0.2, v0.3, v0.4, v0.6, v0.7, v0.8, v0.9, v0.10, v0.11, v0.11b, v0.12, v0.13 (11 gates)  
+**Average variance:** -31% (consistently under estimates, calibration multiplier effective)

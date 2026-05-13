@@ -14,7 +14,7 @@ An AI-powered research assistant that combines live academic search (Semantic Sc
 
 ## Features
 
-### ✅ Implemented (v0.0 → v0.12)
+### ✅ Implemented (v0.0 → v0.13)
 
 - **Multi-Agent ReAct Pattern** - LangGraph orchestration with tool-calling agent
 - **Hybrid Retrieval** - Combines Semantic Scholar, arXiv, and local pgvector corpus
@@ -27,10 +27,10 @@ An AI-powered research assistant that combines live academic search (Semantic Sc
 - **Cost Tracking** - Token usage and cost calculated per query ($3/1M input, $15/1M output)
 - **Rate Limiting** - 10 queries/hour per user (configurable)
 - **Budget Alerts** - Triggers at $10/day threshold
+- **Docker Compose** - Single-command local development environment
 
 ### 🚧 In Progress
 
-- Docker Compose setup (v0.13)
 - CI/CD pipeline (v0.14)
 - Multi-provider BYOK (v0.15)
 
@@ -60,20 +60,59 @@ An AI-powered research assistant that combines live academic search (Semantic Sc
 
 ### Prerequisites
 
-- Python 3.11+
-- Node.js 18+
-- Supabase account
-- API keys:
-  - Anthropic (Claude)
-  - OpenAI (embeddings)
-  - LangSmith
+- **Docker** (Recommended): Docker Desktop installed and running
+- **OR Manual Setup**: Python 3.11+, Node.js 18+
+- **Supabase account**: Create a project at [supabase.com](https://supabase.com)
+- **API keys**:
+  - Anthropic (Claude) - [console.anthropic.com](https://console.anthropic.com)
+  - OpenAI (embeddings) - [platform.openai.com](https://platform.openai.com)
+  - LangSmith (tracing) - [smith.langchain.com](https://smith.langchain.com)
 
-### Backend Setup
+### Option 1: Docker Compose (Recommended)
+
+**Single-command startup for complete local environment:**
+
+```bash
+# 1. Clone repository
+git clone https://github.com/PCSchmidt/multi-agent-research-assistant.git
+cd multi-agent-research-assistant
+
+# 2. Configure environment variables
+cp backend/.env.example backend/.env
+# Edit backend/.env with your API keys (see Prerequisites above)
+
+# 3. Apply database migrations to your Supabase project
+# Go to your Supabase dashboard → SQL Editor
+# Run: backend/app/db/migrations/001_initial_schema.sql
+
+# 4. Start all services
+docker-compose up
+
+# Services will be available at:
+# - Backend API: http://localhost:8000
+# - API Docs: http://localhost:8000/docs  
+# - Frontend Web: http://localhost:8081
+```
+
+**Useful Docker commands:**
+```bash
+docker-compose up -d        # Start in background
+docker-compose logs -f      # Follow logs
+docker-compose down         # Stop all services
+docker-compose restart      # Restart after .env changes
+```
+
+**Note:** For iOS/Android development, run `npm start` in `frontend/` directory instead of using Docker (Expo Dev Tools needed for mobile).
+
+### Option 2: Manual Setup (Without Docker)
+
+##### Backend Setup
 
 ```bash
 cd backend
 python -m venv venv
 source venv/Scripts/activate  # Windows Git Bash
+# On Mac/Linux: source venv/bin/activate
 pip install -r requirements.txt
 
 # Configure environment
@@ -84,16 +123,21 @@ cp .env.example .env
 # Apply backend/app/db/migrations/001_initial_schema.sql to your Supabase project
 
 # Start server
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-### Frontend Setup
+#### Frontend Setup
 
 ```bash
 cd frontend
 npm install
 npm start
+
+# For web only:
+# npm run web
 ```
+
+See [SETUP.md](SETUP.md) for detailed manual setup instructions and troubleshooting.
 
 ## Project Structure
 

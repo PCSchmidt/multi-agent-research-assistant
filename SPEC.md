@@ -1,11 +1,11 @@
 # SPEC.md
 # Current Gate Specification
 
-## Current Version: v0.3
-**Gate:** Chat UI Components  
-**Status:** ✅ COMPLETE - Awaiting approval  
-**Estimate:** 5-8h  
-**Actual:** ~2.5h (significantly under estimate)  
+## Current Version: v0.13
+**Gate:** Docker Compose Polish  
+**Status:** ✅ COMPLETE - Ready for approval  
+**Estimate:** 3-5h  
+**Actual:** ~2h (under estimate)  
 
 ---
 

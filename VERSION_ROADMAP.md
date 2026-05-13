@@ -291,7 +291,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - Verified: `docker-compose up` → working app on localhost
 
 **Estimate:** 3-5h  
-**Status:** Pending  
+**Actual:** ~2h  
+**Status:** ✅ Complete (2026-05-13)  
 **Blocked by:** v0.12
 
 ### v0.14 - CI/CD Pipeline
@@ -379,7 +380,7 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 | v0.11 | Fault-Tolerant Tool Execution | 6-9h | ✅ DONE (~4.5h actual) | v0.10 |
 | v0.11b | Evaluation Framework | 6-9h | ✅ DONE (~3h actual) | v0.11 |
 | v0.12 | LangSmith + Cost Analytics | 4-6h | ✅ DONE (~2.5h actual) | v0.11b |
-| v0.13 | Docker Compose Polish | 3-5h | Pending | v0.12 |
+| v0.13 | Docker Compose Polish | 3-5h | ✅ DONE (~2h actual) | v0.12 |
 | v0.14 | CI/CD Pipeline | 3-5h | Pending | v0.13 |
 | v0.15 | Multi-Provider BYOK + Settings | 6-9h | Pending | v0.14 |
 | v1.0 | Production Live (GO) | 12-20h | Pending | v0.15 |
@@ -387,8 +388,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Total gates:** 18 (added v0.11b after v0.11)  
 **Total estimated hours (raw):** 71-104h  
 **With 2.0x calibration multiplier:** 142-208h  
-**Completed so far:** 10 gates (v0.0 through v0.4, v0.6 through v0.12), ~55.5h actual  
-**Remaining:** 8 gates (v0.5, v0.13 through v1.0), estimated 35-70h  
+**Completed so far:** 11 gates (v0.0 through v0.4, v0.6 through v0.13), ~57.5h actual  
+**Remaining:** 7 gates (v0.5, v0.14, v0.15, v1.0), estimated 30-65h  
 **Architecture:** Academic Research Assistant (live API search + local canonical corpus, abstract-based synthesis)
 
 ---

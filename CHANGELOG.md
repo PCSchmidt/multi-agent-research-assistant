@@ -8,6 +8,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.13] - 2026-05-13 - Docker Compose Polish
+
+### Added
+
+- **Docker Compose Configuration**
+  - Polished docker-compose.yml with comprehensive comments and usage instructions
+  - Backend service with FastAPI + hot-reload enabled
+  - Frontend service with Expo web server
+  - Named volume for frontend node_modules (performance improvement on Windows/Mac)
+  - Health checks for backend service
+  - Restart policies (unless-stopped) for both services
+  - Network isolation (research-net bridge network)
+  
+- **Environment Configuration**
+  - Root .env.example as pointer to backend/.env.example
+  - Clear documentation of required API keys
+  - Environment variable for EXPO_PUBLIC_API_URL in docker-compose.yml
+  
+- **Documentation**
+  - Docker Compose Quick Start section in README.md
+  - "Option 1: Docker Compose (Recommended)" vs "Option 2: Manual Setup" paths
+  - DOCKER.md reference guide created
+  - Usage instructions: up, down, logs, restart commands
+  - Troubleshooting section for common Docker issues
+  - Mobile development notes (Docker web-only, use npm start for iOS/Android)
+  
+- **Verification Script**
+  - docker-verify.sh script for automated testing
+  - Checks: Docker running, .env exists, services healthy, endpoints accessible
+  - Output shows running containers and service URLs
+
+### Changed
+
+- Updated README.md to mark Docker Compose as implemented (moved from "In Progress")
+- Improved docker-compose.yml command for frontend: uses `npx expo start --web`
+- Added port 19000 for Expo Dev Tools (optional)
+
+### Status
+
+- Gate closed: 2026-05-13
+- Actual hours: ~2h
+- Status: 100% complete
+- Next gate: v0.14 - CI/CD Pipeline
+
+---
+
 ## [v0.0] - 2026-05-09 - SCOPE CONFIRMED
 
 ### Added
