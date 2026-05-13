@@ -74,7 +74,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - Touch interaction patterns (tap, swipe, scroll)
 
 **Estimate:** 5-8h (React Native components, touch interactions, cross-platform layout)  
-**Status:** Pending  
+**Actual:** ~6h  
+**Status:** ✅ Complete (2026-05-11, retroactive)  
 **Blocked by:** v0.2
 
 ### v0.4 - Agent Timeline UI
@@ -86,7 +87,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - EvalBadge component (shows RAGAS scores)
 
 **Estimate:** 3-5h  
-**Status:** Pending  
+**Actual:** ~4h  
+**Status:** ✅ Complete (2026-05-11, retroactive)  
 **Blocked by:** v0.3
 
 ### v0.5 - FRONTEND APPROVED
@@ -366,9 +368,9 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 | v0.0 | SCOPE CONFIRMED | 4-6h | ✅ DONE (3.5h actual) | - |
 | v0.1 | MOCKUPS APPROVED | 6-10h | ✅ DONE (6h actual) | v0.0 approval |
 | v0.2 | Frontend Shell | 7-10h | ✅ DONE (~8h actual) | v0.1 approval |
-| v0.3 | Chat UI Components | 5-8h | Pending | v0.2 approval |
-| v0.4 | Agent Timeline UI | 3-5h | Pending | v0.3 |
-| v0.5 | FRONTEND APPROVED | 5-8h | Pending | v0.4 |
+| v0.3 | Chat UI Components | 5-8h | ✅ DONE (~6h actual) | v0.2 approval |
+| v0.4 | Agent Timeline UI | 3-5h | ✅ DONE (~4h actual) | v0.3 |
+| v0.5 | FRONTEND APPROVED | 5-8h | Pending (test tooling blocked) | v0.4 |
 | v0.6 | TESTS APPROVED | 10-16h | ✅ DONE (~4h actual) | v0.5 approval |
 | v0.7 | Backend Foundation | 4-6h | ✅ DONE (~3h actual) | v0.6 approval |
 | v0.8 | ReAct Agent + Academic APIs | 7-10h | ✅ DONE (~5h actual) | v0.7 |
@@ -385,8 +387,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Total gates:** 18 (added v0.11b after v0.11)  
 **Total estimated hours (raw):** 71-104h  
 **With 2.0x calibration multiplier:** 142-208h  
-**Completed so far:** 8 gates (v0.0 through v0.12), ~45.5h actual  
-**Remaining:** 10 gates (v0.13 through v1.0), estimated 42-77h  
+**Completed so far:** 10 gates (v0.0 through v0.4, v0.6 through v0.12), ~55.5h actual  
+**Remaining:** 8 gates (v0.5, v0.13 through v1.0), estimated 35-70h  
 **Architecture:** Academic Research Assistant (live API search + local canonical corpus, abstract-based synthesis)
 
 ---

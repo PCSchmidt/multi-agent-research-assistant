@@ -44,6 +44,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.3] - 2026-05-11 - Chat UI Components (Retroactive)
+
+### Added
+
+- **Chat Components (React Native)**
+  - StreamingMessage component with citation parsing
+  - CitationRenderer component (touchable, numbered superscripts)
+  - PaperDetailsPanel modal (bottom sheet for paper details)
+  - MessageList component with FlatList
+  - Main chat screen in app/(tabs)/index.tsx
+  
+- **Streaming & Interaction**
+  - Animated streaming indicator (three pulsing dots)
+  - Citation tap handling (opens paper details panel)
+  - Keyboard-aware scrolling (KeyboardAvoidingView)
+  - Safe area handling for mobile devices
+  
+- **Eval Badge Integration**
+  - Quality scores display in StreamingMessage
+  - Shows faithfulness, relevancy, citation accuracy
+  - Green badge styling (success-500 color)
+  - Conditional rendering when eval scores available
+  
+- **Styling**
+  - Native StyleSheet matching DESIGN_SYSTEM.md colors
+  - Touch interaction patterns (TouchableOpacity)
+  - Message bubbles with user/assistant differentiation
+  - Responsive max-width (85% of screen)
+
+### Status
+
+- Gate closed: 2026-05-11 (retroactive - components built during backend development)
+- Actual hours: ~6h
+- Status: 100% complete
+- Next gate: v0.4 - Agent Timeline UI
+
+---
+
+## [v0.4] - 2026-05-11 - Agent Timeline UI (Retroactive)
+
+### Added
+
+- **Timeline Components**
+  - AgentTimeline component (header, scrollable, footer)
+  - AgentNode component (individual agent status display)
+  - Activity indicator (animated dot + "In Progress" label)
+  - Empty state hint text
+  
+- **Status Visualization**
+  - Pending, active, completed status badges
+  - Color-coded by agent type (design system colors)
+  - Timestamp display when available
+  - Metadata display (papers found, tokens, etc.)
+  
+- **Layout**
+  - Scrollable timeline (max-height: 400px)
+  - Border styling matching design system
+  - Header with "Research Workflow" title
+  - Footer hint when no activity
+  
+### Status
+
+- Gate closed: 2026-05-11 (retroactive - components built during backend development)
+- Actual hours: ~4h
+- Status: 100% complete
+- Next gate: v0.5 - FRONTEND APPROVED (pending test tooling)
+
+---
+
 ## [v0.1] - 2026-05-09 - MOCKUPS APPROVED
 
 ### Added
@@ -318,5 +387,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.11]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.11
 [v0.10]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.10
 [v0.9]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.9
+[v0.4]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.4
+[v0.3]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.3
 [v0.1]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.1
 [v0.0]: https://github.com/PCSchmidt/multi-agent-research-assistant/releases/tag/blueprint-gate-v0.0
