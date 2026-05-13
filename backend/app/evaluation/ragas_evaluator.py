@@ -73,11 +73,17 @@ class RAGASEvaluator:
             "contexts": [contexts],  # List of lists
         }
 
-        # Add ground truth if provided (some metrics use it)
+        # Add ground truth if provided (required for context_precision)
         if ground_truth:
-            data["ground_truth"] = [ground_truth]
+            data["reference"] = [ground_truth]
 
         dataset = Dataset.from_dict(data)
+
+        # Select metrics based on available data
+        # context_precision requires 'reference' (ground truth)
+        metrics_to_use = [faithfulness, answer_relevancy]
+        if ground_truth:
+            metrics_to_use.append(context_precision)
 
         try:
             # Run evaluation in executor to avoid blocking
@@ -85,15 +91,18 @@ class RAGASEvaluator:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: evaluate(dataset, metrics=self.metrics)
+                lambda: evaluate(dataset, metrics=metrics_to_use)
             )
 
             # Extract scores
             scores = {
                 "faithfulness": float(result["faithfulness"]),
                 "answer_relevancy": float(result["answer_relevancy"]),
-                "context_precision": float(result["context_precision"]),
             }
+
+            # Add context_precision only if it was evaluated
+            if ground_truth and "context_precision" in result:
+                scores["context_precision"] = float(result["context_precision"])
 
             return scores
 

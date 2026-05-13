@@ -127,10 +127,10 @@ async def submit_research_query(request_body: QueryRequest, request: Request):
                     "completed_at": datetime.now().isoformat(),
                 }
             ).eq("id", session_id).execute()
-        except:
+        except Exception:
             pass  # Best effort
 
-        raise HTTPException(status_code=500, detail=f"Research query failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Research query failed: {str(e)}") from e
 
 
 @router.get("/session/{session_id}", response_model=ResearchResponse)

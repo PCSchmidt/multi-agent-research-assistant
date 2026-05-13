@@ -103,7 +103,7 @@ async def get_cost_summary(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch cost summary: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch cost summary: {str(e)}") from e
 
 
 @router.get("/cost/queries", response_model=list[QueryCost])
@@ -157,7 +157,7 @@ async def get_query_costs(
         return queries
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch query costs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch query costs: {str(e)}") from e
 
 
 @router.get("/cost/daily", response_model=list[DailyCostSummary])
@@ -226,7 +226,7 @@ async def get_daily_costs(
         return daily_summaries
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch daily costs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch daily costs: {str(e)}") from e
 
 
 @router.get("/cost/budget-status")
@@ -272,4 +272,4 @@ async def get_budget_status(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to check budget status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to check budget status: {str(e)}") from e

@@ -44,7 +44,7 @@ async def compute_manual_metrics(
     # This is a rough heuristic - true accuracy requires manual verification
     citation_accuracy = None
     if papers:
-        max_citation_num = max((int(c) for c in citations_in_answer), default=0)
+        _ = max((int(c) for c in citations_in_answer), default=0)
         # Ideally each paper should be cited at least once
         citation_accuracy = min(num_citations / len(papers), 1.0)
 

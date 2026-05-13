@@ -9,6 +9,7 @@ These tests verify:
 
 import pytest
 
+import pytest
 from app.evaluation.ragas_evaluator import RAGASEvaluator
 from app.models.research import Author, Paper
 
@@ -29,7 +30,7 @@ def sample_papers():
             authors=[Author(name="Vaswani et al.")],
             abstract="The dominant sequence transduction models are based on complex recurrent or convolutional neural networks. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms.",
             year=2017,
-            source="test",
+            source="s2",
             citation_count=50000,
         ),
         Paper(
@@ -38,13 +39,14 @@ def sample_papers():
             authors=[Author(name="Devlin et al.")],
             abstract="We introduce BERT, a new language representation model that uses bidirectional transformers. BERT is designed to pre-train deep bidirectional representations by jointly conditioning on both left and right context.",
             year=2018,
-            source="test",
+            source="s2",
             citation_count=40000,
         ),
     ]
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_response_valid_inputs(evaluator):
     """Test evaluation with valid inputs."""
     question = "What is the attention mechanism in transformers?"
@@ -71,6 +73,7 @@ async def test_evaluate_response_valid_inputs(evaluator):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_from_papers(evaluator, sample_papers):
     """Test evaluation using Paper objects."""
     question = "What are transformers in NLP?"
@@ -92,6 +95,7 @@ async def test_evaluate_from_papers(evaluator, sample_papers):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_empty_answer_raises_error(evaluator):
     """Test that empty answer raises ValueError."""
     with pytest.raises(ValueError, match="Answer cannot be empty"):
@@ -103,6 +107,7 @@ async def test_evaluate_empty_answer_raises_error(evaluator):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_no_contexts_raises_error(evaluator):
     """Test that empty contexts list raises ValueError."""
     with pytest.raises(ValueError, match="At least one context is required"):
@@ -114,6 +119,7 @@ async def test_evaluate_no_contexts_raises_error(evaluator):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_empty_question_raises_error(evaluator):
     """Test that empty question raises ValueError."""
     with pytest.raises(ValueError, match="Question cannot be empty"):
@@ -124,6 +130,7 @@ async def test_evaluate_empty_question_raises_error(evaluator):
         )
 
 
+@pytest.mark.integration
 def test_check_thresholds_default(evaluator):
     """Test threshold checking with default thresholds."""
     scores = {
@@ -140,6 +147,7 @@ def test_check_thresholds_default(evaluator):
     assert per_metric["context_precision"] is True
 
 
+@pytest.mark.integration
 def test_check_thresholds_some_fail(evaluator):
     """Test threshold checking when some metrics fail."""
     scores = {
@@ -156,6 +164,7 @@ def test_check_thresholds_some_fail(evaluator):
     assert per_metric["context_precision"] is False
 
 
+@pytest.mark.integration
 def test_check_thresholds_custom(evaluator):
     """Test threshold checking with custom thresholds."""
     scores = {
@@ -179,6 +188,7 @@ def test_check_thresholds_custom(evaluator):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_evaluate_from_papers_no_abstracts_raises_error(evaluator):
     """Test that papers without abstracts raise ValueError."""
     papers_without_abstracts = [
@@ -188,7 +198,7 @@ async def test_evaluate_from_papers_no_abstracts_raises_error(evaluator):
             authors=[Author(name="Test Author")],
             abstract=None,  # No abstract
             year=2020,
-            source="test",
+            source="s2",
         )
     ]
 
@@ -200,6 +210,7 @@ async def test_evaluate_from_papers_no_abstracts_raises_error(evaluator):
         )
 
 
+@pytest.mark.integration
 def test_check_thresholds_edge_case_exact_match(evaluator):
     """Test threshold checking with exact threshold match."""
     scores = {

@@ -51,7 +51,7 @@ async def check_db_connection() -> bool:
     try:
         client = get_supabase_client()
         # Simple query to verify connection
-        result = client.table("research_sessions").select("id").limit(1).execute()
+        _ = client.table("research_sessions").select("id").limit(1).execute()
         return True
     except Exception as e:
         print(f"Database connection check failed: {e}")

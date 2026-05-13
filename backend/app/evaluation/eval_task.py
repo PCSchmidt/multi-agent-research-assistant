@@ -124,7 +124,7 @@ async def evaluate_research_session(
             "notes": eval_result["notes"],
         }
 
-        result = supabase.table("eval_results").insert(insert_data).execute()
+        _ = supabase.table("eval_results").insert(insert_data).execute()
         print(f"[EVAL] Results logged to database for session {session_id_str}")
 
     except Exception as e:

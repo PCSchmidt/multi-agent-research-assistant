@@ -83,7 +83,7 @@ jobs:
           SUPABASE_KEY: test_key
           SUPABASE_SERVICE_ROLE_KEY: test_key
         run: |
-          pytest tests/unit/ --cov=app --cov-report=term --cov-report=html
+          pytest tests/unit/ -m "not integration" --cov=app --cov-report=term --cov-report=html
 
   backend-docker:
     name: Backend Docker Build

@@ -20,7 +20,7 @@ def sample_papers_diverse():
             authors=[Author(name="Author A")],
             abstract="Test abstract",
             year=2023,
-            source="semantic_scholar",
+            source="s2",
             citation_count=100,
         ),
         Paper(
@@ -54,7 +54,7 @@ def sample_papers_skewed():
             authors=[Author(name=f"Author {i}")],
             abstract="Test abstract",
             year=2023,
-            source="semantic_scholar",
+            source="s2",
         )
         for i in range(5)
     ]
@@ -110,7 +110,7 @@ async def test_compute_manual_metrics_old_papers_only():
             authors=[Author(name="Author")],
             abstract="Abstract",
             year=2015,
-            source="test",
+            source="local",
         ),
         Paper(
             paper_id="old_2",
@@ -118,7 +118,7 @@ async def test_compute_manual_metrics_old_papers_only():
             authors=[Author(name="Author")],
             abstract="Abstract",
             year=2018,
-            source="test",
+            source="local",
         ),
     ]
 
@@ -150,7 +150,7 @@ def test_compute_source_diversity_not_enough_papers():
             authors=[Author(name="Author")],
             abstract="Abstract",
             year=2020,
-            source="test",
+            source="s2",
         )
     ]
 
@@ -169,7 +169,7 @@ def test_compute_source_diversity_mostly_one_source():
                 authors=[Author(name="Author")],
                 abstract="Abstract",
                 year=2020,
-                source="semantic_scholar",
+                source="s2",
             )
             for i in range(7)
         ],
