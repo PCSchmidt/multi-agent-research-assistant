@@ -28,15 +28,19 @@
 Enable users to bring their own API keys for Anthropic, OpenAI, and OpenRouter. User keys override owner's default keys. Settings UI in Expo app for key management.
 
 ## Deliverables (v0.15)
-- [ ] Database schema: `user_api_keys` table with RLS policies
-  - [ ] Columns: id, user_id, provider, encrypted_key, created_at, updated_at
-  - [ ] RLS policy: users can only access their own keys
-  - [ ] pgcrypto extension enabled for encryption
-- [ ] Backend CRUD endpoints (`/api/keys`):
-  - [ ] POST /api/keys - Save/update user key
-  - [ ] GET /api/keys - List user's keys (returns provider names only, not actual keys)
-  - [ ] DELETE /api/keys/{provider} - Delete user key
-  - [ ] POST /api/keys/{provider}/test - Test key connection
+- [x] Database schema: `user_api_keys` table with RLS policies
+  - [x] Columns: id, user_id, provider, encrypted_key, created_at, updated_at
+  - [x] RLS policy: users can only access their own keys
+  - [x] pgcrypto extension enabled for encryption
+  - [x] Migration SQL file created (supabase/migrations/20260513_user_api_keys.sql)
+- [x] Backend CRUD endpoints (`/api/keys`):
+  - [x] POST /api/keys - Save/update user key
+  - [x] GET /api/keys - List user's keys (returns provider names only, not actual keys)
+  - [x] DELETE /api/keys/{provider} - Delete user key
+  - [x] POST /api/keys/{provider}/test - Test key connection
+  - [x] Pydantic models (APIKeyCreate, APIKeyResponse, APIKeyTestResponse)
+  - [x] Fernet encryption utilities
+  - [x] Full unit test coverage (8 tests, all passing)
 - [ ] Key hierarchy implementation:
   - [ ] User keys override owner's default keys in config
   - [ ] Fallback to default keys if user keys not present
@@ -53,7 +57,10 @@ Enable users to bring their own API keys for Anthropic, OpenAI, and OpenRouter. 
 
 ## Active Tasks
 **v0.15 IN PROGRESS (2026-05-13):**
-- Starting with database schema and backend endpoints
+- Backend complete: API key management endpoints, encryption, tests
+- Next: Frontend settings screen + LiteLLM integration
+- Progress: ~40% complete (~2.5h of 6-9h estimated)
+- Breaking for now, will resume with frontend implementation
 
 **APPROVAL TOKEN:** FRONTEND APPROVED ✅
 

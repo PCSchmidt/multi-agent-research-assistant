@@ -8,6 +8,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.15] - 2026-05-13 - Multi-Provider BYOK + Settings (IN PROGRESS)
+
+### Added (Backend - Complete)
+
+- **API Key Management Endpoints**
+  - POST /api/keys - Save/update user API keys with encryption
+  - GET /api/keys - List user's API keys (metadata only, no actual keys)
+  - DELETE /api/keys/{provider} - Delete user's API key
+  - POST /api/keys/{provider}/test - Test API key validity with actual provider
+  - Pydantic models: APIKeyCreate, APIKeyResponse, APIKeyTestResponse
+  - Provider enum: Literal["anthropic", "openai", "openrouter"]
+
+- **Encryption Utilities**
+  - Fernet-based symmetric encryption for API key storage
+  - PBKDF2HMAC key derivation from service role key
+  - Base64 encoding for encrypted data
+
+- **Database Schema**
+  - user_api_keys table with RLS policies
+  - Columns: id, user_id, provider, encrypted_key, created_at, updated_at
+  - Unique constraint: one key per user per provider
+  - Auto-updating updated_at trigger
+  - Migration file: supabase/migrations/20260513_user_api_keys.sql
+
+- **Testing**
+  - Full unit test coverage (8 tests, all passing)
+  - Tests for CRUD operations, key testing, error cases
+  - Mocked Supabase and provider clients
+
+### Dependencies
+
+- Added cryptography>=44.0.0 for encryption
+
+### Status
+
+- Backend: ✅ Complete (~2.5h)
+- Frontend: ⏳ Pending (~2-3h)
+- LiteLLM Integration: ⏳ Pending (~1h)
+
+---
+
 ## [v0.14] - 2026-05-13 - CI/CD Pipeline
 
 ### Added

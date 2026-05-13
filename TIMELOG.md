@@ -116,6 +116,32 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 
 ---
 
+## v0.15 - Multi-Provider BYOK + Settings
+**Date:** 2026-05-13 (in progress)  
+**Estimated:** 6-9h  
+**Actual so far:** ~2.5h  
+**Status:** 🚧 Backend complete, frontend + LiteLLM pending
+
+**Time breakdown (so far):**
+- Database schema + migration: 0.5h
+- Backend endpoints (CRUD + test): 1.0h
+- Encryption utilities: 0.3h
+- Unit tests: 0.5h
+- CI debugging (3 rounds): 0.2h
+
+**Notes:** 
+- Backend implementation complete with all tests passing
+- Created user_api_keys table with RLS policies
+- Fernet encryption for key storage
+- 8 unit tests covering all endpoints
+- Stopped here for break, ~40% complete
+
+**Remaining:**
+- Frontend settings screen (Expo/React Native): ~2-3h
+- LiteLLM integration: ~1h
+
+---
+
 ## v0.14 - CI/CD Pipeline
 **Date:** 2026-05-13  
 **Estimated:** 3-5h  
