@@ -8,6 +8,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.14] - 2026-05-13 - CI/CD Pipeline
+
+### Added
+
+- **GitHub Actions Workflow**
+  - `.github/workflows/ci.yml` with 9 jobs across backend and frontend
+  - Runs on push to main/develop branches and pull requests to main
+  - All jobs required to pass before merge (via all-checks-passed meta-job)
+
+- **Backend CI Jobs**
+  - **Lint (ruff)**: Python code style and error checking
+  - **Type Check (mypy)**: Static type checking with --ignore-missing-imports
+  - **Test (pytest)**: Unit tests with coverage reporting, integration tests marked and skipped
+  - **Docker Build**: Verifies backend Docker image builds and starts successfully
+  - Environment: Python 3.11, Ubuntu latest
+  - Test isolation: Only runs unit tests (integration tests require external APIs)
+
+- **Frontend CI Jobs**
+  - **Lint (eslint)**: TypeScript/React Native linting with eslint v8
+  - **Type Check (tsc)**: TypeScript compilation check with --noEmit
+  - **Test (jest)**: Component tests with React 19 compatibility
+  - **Build (expo)**: Web build verification with `npx expo export --platform web`
+  - Environment: Node 20, Ubuntu latest
+  - Uses --legacy-peer-deps for React 19 compatibility
+
+- **Configuration Files**
+  - `backend/pyproject.toml`: Ruff and mypy configuration
+  - `frontend/.eslintrc.json`: ESLint v8 configuration for TypeScript + React Native
+  - CI status badge added to README.md
+
+### Changed
+
+- **Backend Test Markers**: Added `@pytest.mark.integration` to RAGAS evaluator tests
+- **Backend Configuration**: Mypy runs without --strict mode to reduce initial friction
+- **Frontend Dependencies**: Downgraded eslint from v9 to v8 for compatibility
+- **Frontend Package Lock**: Regenerated after eslint downgrade
+
+### Fixed
+
+- **Backend Lint Errors** (6 total across 4 test files):
+  - test_hybrid_merge.py: Unused variables (workflow, state, agent)
+  - test_local_corpus.py: Unused variable (papers)
+  - test_ragas_evaluator.py: Duplicate pytest import, unused loop variable (metric)
+  - test_semantic_scholar.py: Unused variable (papers)
+  - All imports organized alphabetically per ruff I001 rule
+
+- **Backend Test Validation**:
+  - Paper model source field: Changed all test fixtures to use valid Literal values ('s2', 'arxiv', 'local')
+  - RAGAS evaluator: Made context_precision metric conditional on ground_truth parameter
+
+- **Exception Handling**:
+  - All raise HTTPException statements now use `from e` for proper exception chaining (B904)
+  - Changed bare `except:` to `except Exception:` (E722)
+
+- **Import Organization**:
+  - Moved all imports to top of files (E402)
+  - Sorted imports alphabetically (I001)
+
+### Status
+
+- Gate closed: 2026-05-13
+- All 9 CI jobs passing on run #6 (commit 6ed7573)
+- 6 CI runs total: initial setup + 5 debugging iterations
+
+---
+
 ## [v0.13] - 2026-05-13 - Docker Compose Polish
 
 ### Added

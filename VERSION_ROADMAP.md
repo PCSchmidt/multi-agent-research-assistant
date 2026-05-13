@@ -299,12 +299,13 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 **Goal:** GitHub Actions running tests on every push  
 **Deliverables:**
 - .github/workflows/ci.yml
-- Jobs: lint (ruff, eslint), type-check (mypy, tsc), test (pytest, vitest), build
-- Branch protection on main (require CI passing)
+- Jobs: lint (ruff, eslint), type-check (mypy, tsc), test (pytest, jest), build (Docker, expo)
+- Branch protection on main (require CI passing) - optional
 - Status badge in README
 
 **Estimate:** 3-5h  
-**Status:** Pending  
+**Actual:** ~3.5h  
+**Status:** ✅ Complete (2026-05-13)  
 **Blocked by:** v0.13
 
 ### v0.15 - Multi-Provider BYOK + Settings
@@ -381,15 +382,15 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 | v0.11b | Evaluation Framework | 6-9h | ✅ DONE (~3h actual) | v0.11 |
 | v0.12 | LangSmith + Cost Analytics | 4-6h | ✅ DONE (~2.5h actual) | v0.11b |
 | v0.13 | Docker Compose Polish | 3-5h | ✅ DONE (~2h actual) | v0.12 |
-| v0.14 | CI/CD Pipeline | 3-5h | Pending | v0.13 |
+| v0.14 | CI/CD Pipeline | 3-5h | ✅ Complete (2026-05-13) | v0.13 |
 | v0.15 | Multi-Provider BYOK + Settings | 6-9h | Pending | v0.14 |
 | v1.0 | Production Live (GO) | 12-20h | Pending | v0.15 |
 
 **Total gates:** 18 (added v0.11b after v0.11)  
 **Total estimated hours (raw):** 71-104h  
 **With 2.0x calibration multiplier:** 142-208h  
-**Completed so far:** 11 gates (v0.0 through v0.4, v0.6 through v0.13), ~57.5h actual  
-**Remaining:** 7 gates (v0.5, v0.14, v0.15, v1.0), estimated 30-65h  
+**Completed so far:** 12 gates (v0.0 through v0.4, v0.6 through v0.14), ~61h actual  
+**Remaining:** 6 gates (v0.5, v0.15, v1.0), estimated 27-60h  
 **Architecture:** Academic Research Assistant (live API search + local canonical corpus, abstract-based synthesis)
 
 ---

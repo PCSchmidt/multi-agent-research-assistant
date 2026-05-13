@@ -97,6 +97,53 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 
 ---
 
+## v0.13 - Docker Compose Polish
+**Date:** 2026-05-13  
+**Estimated:** 3-5h  
+**Actual:** ~2h  
+**Variance:** -50% (significantly under estimate)
+
+**Time breakdown:**
+- docker-compose.yml polish: 0.5h
+- Documentation (README, DOCKER.md): 0.5h
+- Verification script: 0.5h
+- Testing and refinement: 0.5h
+
+**Notes:** 
+- Most infrastructure already existed from previous gates
+- Primarily documentation and polish work
+- No unexpected blockers
+
+---
+
+## v0.14 - CI/CD Pipeline
+**Date:** 2026-05-13  
+**Estimated:** 3-5h  
+**Actual:** ~3.5h  
+**Variance:** -16% (under estimate)
+
+**Time breakdown:**
+- Initial workflow setup: 0.5h
+- First CI run + investigation: 0.5h
+- Backend lint fixes (ruff): 1.0h (11 errors → 6 errors → 0 errors across 3 iterations)
+- Backend test fixes (Paper validation, RAGAS): 0.5h
+- Frontend configuration (eslint, Node version): 0.5h
+- Frontend package-lock.json regeneration: 0.5h
+
+**Notes:** 
+- 6 total CI runs before success
+- Most time spent on backend linting (unused variables, import organization)
+- Frontend blocked by package-lock.json sync issue (eslint v9 → v8 downgrade)
+- RAGAS context_precision required ground_truth parameter fix
+- Final run (#6) passed all 9 jobs
+
+**CI Job Breakdown:**
+- Backend: Lint (ruff), Type Check (mypy), Test (pytest), Docker Build
+- Frontend: Lint (eslint), Type Check (tsc), Test (jest), Build (expo)
+- Meta: All Checks Passed (depends on all 8 jobs)
+
+---
+
 ## v0.7 - Backend Foundation
 **Date:** 2026-05-11  
 **Estimated:** 4-6h  
