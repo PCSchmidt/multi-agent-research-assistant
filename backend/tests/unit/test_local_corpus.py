@@ -126,7 +126,7 @@ async def test_search_local_corpus_limits_results(mock_embedding, mock_papers_re
             mock_client.return_value.rpc.return_value.execute.return_value = mock_rpc_result
 
             # Execute search with limit=3
-            papers = await search_local_corpus("query", match_threshold=0.5, limit=3)
+            _ = await search_local_corpus("query", match_threshold=0.5, limit=3)
 
             # Verify RPC was called with search_canonical_papers and parameters
             mock_client.return_value.rpc.assert_called_once()

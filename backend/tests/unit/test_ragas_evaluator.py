@@ -9,7 +9,6 @@ These tests verify:
 
 import pytest
 
-import pytest
 from app.evaluation.ragas_evaluator import RAGASEvaluator
 from app.models.research import Author, Paper
 
@@ -90,7 +89,7 @@ async def test_evaluate_from_papers(evaluator, sample_papers):
     assert "answer_relevancy" in scores
     assert "context_precision" in scores
 
-    for metric, score in scores.items():
+    for _, score in scores.items():
         assert 0 <= score <= 1
 
 

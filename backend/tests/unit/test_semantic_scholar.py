@@ -55,7 +55,7 @@ async def test_search_semantic_scholar_with_year_filter():
         )
         mock_get.return_value.raise_for_status = lambda: None
 
-        papers = await search_semantic_scholar("attention", year_range="2022-2024")
+        _ = await search_semantic_scholar("attention", year_range="2022-2024")
 
         # Verify year parameter was passed
         call_args = mock_get.call_args
