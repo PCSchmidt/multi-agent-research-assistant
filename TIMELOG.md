@@ -47,3 +47,53 @@ Optional manual time tracking per gate. If not manually tracked, calibration hoo
 ---
 
 **Total logged hours:** 9.5h
+
+## v0.11b - Evaluation Framework (RAGAS + Manual Rubric)
+**Date:** 2026-05-12  
+**Estimated:** 6-9h (from original roadmap v0.11)  
+**Actual:** ~3h  
+**Variance:** -50% (significantly under estimate)
+
+**Time breakdown:**
+- RAGAS evaluator module: 0.5h
+- Seeded test set creation (10 queries): 0.5h
+- Async evaluation task: 0.5h
+- Manual rubric module: 0.5h
+- API integration + testing: 0.5h
+- Debugging RAGAS ground truth issue: 0.5h
+
+**Notes:** 
+- RAGAS already in dependencies (no installation overhead)
+- Test set focused on NLP/ML only (no medicine/physics queries)
+- RAGAS context_precision requires ground truth (deferred)
+- Manual metrics work well as automated heuristics
+- Evaluation runs async, doesn't block user response
+
+---
+
+## v0.12 - LangSmith Integration + Cost Analytics
+**Date:** 2026-05-12  
+**Estimated:** 4-6h  
+**Actual:** ~2.5h  
+**Variance:** -40% (under estimate)
+
+**Time breakdown:**
+- LangSmith callback handler: 0.5h
+- Trace URL logging + metadata tags: 0.5h
+- Cost analytics API (4 endpoints): 0.75h
+- Rate limiting middleware: 0.25h
+- Budget alert system: 0.25h
+- Debugging database session creation: 0.25h (duplicate insert bug)
+
+**Notes:** 
+- LangSmith already configured in config.py (partial foundation)
+- Callback pattern straightforward for token/trace capture
+- Database update bug (session created twice) caught in testing
+- Analytics endpoints reuse existing Supabase patterns
+- Email alerts deferred to future (placeholder created)
+
+---
+
+**Total logged hours:** 15h  
+**Gates completed:** v0.0, v0.1, v0.11b, v0.12  
+**Average variance:** -25% (trending under estimates)

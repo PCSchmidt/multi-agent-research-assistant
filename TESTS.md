@@ -752,5 +752,18 @@ python scripts/verify_traces.py --date=2026-05-09
 
 ---
 
-**Last Updated:** 2026-05-10  
-**Status:** TESTS APPROVED ✅ (awaiting user approval)
+**Last Updated:** 2026-05-12  
+**Status:** TESTS APPROVED ✅ (v0.6 approved 2026-05-10)
+
+## Implementation Status
+
+- **v0.6 TESTS APPROVED:** Test strategy documented ✅
+- **v0.11b Evaluation Framework:** Implementation complete ✅
+  - RAGAS evaluator module created
+  - Manual rubric module created
+  - 10-query test set defined
+  - Background evaluation task integrated
+  - Results logged to `eval_results` table
+- **Backend tests:** Unit tests passing (pytest)
+- **Frontend tests:** Awaiting React 19 compatibility (test files ready)
+- **E2E tests:** Manual testing complete, automated E2E pending

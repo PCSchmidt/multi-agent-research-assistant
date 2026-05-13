@@ -7,38 +7,35 @@ Component hierarchy, props, state management, and data flow for the multi-agent 
 
 ## Tech Stack
 
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Expo SDK 52+ with Expo Router (React Native for iOS, Android, Web)
 - **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS
+- **Styling:** NativeWind (Tailwind CSS for React Native)
 - **State:** React hooks (useState, useReducer) + Server-Sent Events (SSE)
-- **Auth:** Supabase Auth (client SDK)
-- **Data fetching:** Native fetch + SSE EventSource
-- **Forms:** React Hook Form (if needed for settings)
+- **Auth:** Supabase React Native SDK
+- **Data fetching:** Native fetch + SSE streaming
+- **Forms:** React Native forms with controlled components
 
 ---
 
-## Page Structure (App Router)
+## Page Structure (Expo Router)
 
 ```
 app/
-├── (auth)/
-│   ├── login/
-│   │   └── page.tsx          # LoginPage
-│   ├── signup/
-│   │   └── page.tsx          # SignupPage
-│   └── reset-password/
-│       └── page.tsx          # PasswordResetPage
+├── (tabs)/
+│   ├── index.tsx             # ChatPage (main research interface)
+│   ├── history.tsx           # HistoryPage (past research sessions)
+│   └── settings.tsx          # SettingsPage (BYOK configuration)
 │
-├── (dashboard)/
-│   ├── layout.tsx            # DashboardLayout (protected route wrapper)
-│   ├── page.tsx              # ChatPage (main research interface)
-│   ├── settings/
-│   │   └── page.tsx          # SettingsPage (BYOK configuration)
-│   └── history/
-│       └── page.tsx          # HistoryPage (past research sessions)
+├── auth/
+│   ├── login.tsx             # LoginPage
+│   ├── signup.tsx            # SignupPage
+│   └── reset-password.tsx    # PasswordResetPage
 │
-└── layout.tsx                # RootLayout (Supabase provider, fonts)
+├── _layout.tsx               # RootLayout (Supabase provider, fonts, tab navigation)
+└── +not-found.tsx            # 404 page
 ```
+
+**Note:** Expo Router uses file-based routing similar to Next.js App Router. The `(tabs)` group creates a tab navigator for the main app screens.
 
 ---
 

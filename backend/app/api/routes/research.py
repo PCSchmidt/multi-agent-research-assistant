@@ -1,13 +1,19 @@
 """Research query endpoints."""
 
+import json
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from app.agent.graph import run_research_query
+from app.agent.graph import run_research_query, create_research_agent, RESEARCH_AGENT_PROMPT
+from app.agent.state import ResearchState
 from app.models.research import ResearchResponse, Paper, Citation
 from app.db.client import get_supabase_admin_client
+from app.evaluation.eval_task import spawn_evaluation_task
+from app.middleware.langsmith_callback import LangSmithTraceCallback
+from langchain_core.messages import SystemMessage, HumanMessage
 
 router = APIRouter(tags=["research"], prefix="/api/research")
 
@@ -195,3 +201,171 @@ def _extract_papers_from_state(state: dict) -> list[Paper]:
     # For v0.8, we're verifying tool execution works
     # v0.9 will properly track papers in state
     return []
+
+
+def _format_sse_event(event: str, data: dict) -> str:
+    """Format data as Server-Sent Event."""
+    return f"event: {event}\ndata: {json.dumps(data)}\n\n"
+
+
+@router.post("/stream")
+async def stream_research_query(request_body: QueryRequest):
+    """
+    Stream research query execution via Server-Sent Events.
+
+    Events emitted:
+    - status: Agent status updates (searching, synthesizing, etc.)
+    - paper: Paper found
+    - synthesis: Synthesis chunk (partial answer)
+    - done: Query complete with final results
+    - error: Error occurred
+    """
+    session_id = str(uuid4())
+    user_id = request_body.user_id or "00000000-0000-0000-0000-000000000000"
+
+    async def event_generator():
+        print(f"[EVENT_GEN] Starting event generator for query: {request_body.query}")
+        try:
+            # Create session in database
+            supabase = get_supabase_admin_client()
+            session_data = {
+                "id": session_id,
+                "user_id": user_id,
+                "query": request_body.query,
+                "status": "processing",
+            }
+            supabase.table("research_sessions").insert(session_data).execute()
+            print(f"[DB] Session created: {session_id}")
+
+            # Send initial status
+            print(f"[EVENT_GEN] Yielding initial status event")
+            yield _format_sse_event(
+                "status",
+                {"message": "Starting research query...", "session_id": session_id},
+            )
+
+            # Create agent
+            print(f"[EVENT_GEN] Creating research agent...")
+            agent = create_research_agent()
+            print(f"[EVENT_GEN] Agent created: {type(agent)}")
+
+            # Initialize state
+            print(f"[EVENT_GEN] Initializing agent state...")
+            initial_state: ResearchState = {
+                "messages": [
+                    SystemMessage(content=RESEARCH_AGENT_PROMPT),
+                    HumanMessage(content=request_body.query),
+                ],
+                "query": request_body.query,
+                "papers": [],
+                "citations": [],
+                "synthesis": None,
+                "eval_scores": None,
+                "agent_statuses": [],
+                "llm_calls_count": 0,
+                "should_continue": True,
+                "error_message": None,
+            }
+            print(f"[EVENT_GEN] State initialized with {len(initial_state['messages'])} messages")
+
+            # Stream agent execution with LangSmith metadata
+            print(f"[STREAM] Starting agent.ainvoke()...")
+
+            # Create callback handler to capture trace info and token usage
+            trace_callback = LangSmithTraceCallback()
+
+            # Configure LangSmith metadata for tracing
+            config = {
+                "metadata": {
+                    "user_id": user_id,
+                    "session_id": session_id,
+                    "query": request_body.query,
+                    "tools_available": ["search_s2", "search_arxiv", "search_local"],
+                },
+                "tags": ["research_query", "multi_agent"],
+                "callbacks": [trace_callback],
+            }
+
+            # Use ainvoke to get full final state (astream chunks are partial updates)
+            final_state = await agent.ainvoke(initial_state, config=config)
+            print(f"[STREAM] Agent finished. Papers: {len(final_state.get('papers', []))}, LLM calls: {final_state.get('llm_calls_count', 0)}")
+
+            # Get trace info from callback
+            trace_info = trace_callback.get_trace_info()
+            cost_usd = trace_callback.calculate_cost_usd()
+
+            print(f"[LANGSMITH] Trace URL: {trace_info['trace_url']}")
+            print(f"[COST] Tokens: {trace_info['total_tokens']} ({trace_info['input_tokens']} in, {trace_info['output_tokens']} out)")
+            print(f"[COST] Estimated cost: ${cost_usd:.6f}")
+
+            # Update session with trace URL and cost data
+            supabase.table("research_sessions").update({
+                "status": "completed",
+                "langsmith_trace_url": trace_info["trace_url"],
+                "total_tokens": trace_info["total_tokens"],
+                "input_tokens": trace_info["input_tokens"],
+                "output_tokens": trace_info["output_tokens"],
+                "cost_usd": cost_usd,
+                "llm_calls_count": trace_info["llm_calls"],
+                "completed_at": datetime.now().isoformat(),
+            }).eq("id", session_id).execute()
+            print(f"[DB] Session updated with trace URL and cost data")
+
+            # For now, just yield the final result
+            # TODO v0.12: Switch back to astream() and implement proper state accumulation for real-time updates
+
+            # Extract papers and synthesis from final state
+            papers = final_state.get("papers", []) if final_state else []
+            synthesis = final_state.get("synthesis") if final_state else None
+
+            # If no explicit synthesis, extract from last AI message
+            if not synthesis and final_state and "messages" in final_state:
+                messages = final_state["messages"]
+                print(f"[EXTRACT] Total messages: {len(messages)}")
+                for i, msg in enumerate(reversed(messages)):
+                    msg_type = type(msg).__name__
+                    content_preview = msg.content[:100] if hasattr(msg, "content") else "no content"
+                    print(f"[EXTRACT] Message {len(messages)-i-1} ({msg_type}): {content_preview}...")
+                    if hasattr(msg, "content") and isinstance(msg.content, str):
+                        # Look for last AI message (not system, not tool)
+                        if msg_type == "AIMessage" and len(msg.content) > 100:
+                            synthesis = msg.content
+                            print(f"[EXTRACT] Using AIMessage as synthesis (length: {len(msg.content)})")
+                            break
+
+            # Spawn background evaluation task
+            # This runs asynchronously and logs results to eval_results table
+            if synthesis and papers:
+                print(f"[EVAL] Spawning evaluation task for session {session_id}")
+                spawn_evaluation_task(
+                    session_id=session_id,
+                    query=request_body.query,
+                    answer=synthesis,
+                    papers=papers,
+                    run_ragas=True,  # Run RAGAS for all queries
+                    run_manual=True,  # Compute automated manual metrics
+                )
+
+            # Send completion event
+            yield _format_sse_event(
+                "done",
+                {
+                    "session_id": session_id,
+                    "papers_count": len(papers),
+                    "synthesis": synthesis or "No synthesis generated",
+                    "llm_calls": final_state.get("llm_calls_count", 0) if final_state else 0,
+                },
+            )
+
+        except Exception as e:
+            yield _format_sse_event("error", {"message": str(e)})
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",  # Disable nginx buffering
+        },
+    )

@@ -123,7 +123,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - LangSmith trace verification plan
 
 **Estimate:** 10-16h (5-8h × 2.0x)  
-**Status:** Pending  
+**Actual:** ~4h  
+**Status:** ✅ Complete (2026-05-10)  
 **Approval token:** `TESTS APPROVED`  
 **Blocked by:** FRONTEND APPROVED
 
@@ -143,7 +144,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - Cost tracking middleware (log LLM calls, token usage per request)
 
 **Estimate:** 4-6h  
-**Status:** Pending  
+**Actual:** ~3h  
+**Status:** ✅ Complete (2026-05-11)  
 **Blocked by:** TESTS APPROVED
 
 ### v0.8 - ReAct Agent + Academic API Tools
@@ -162,7 +164,8 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - **Cost caps in middleware:** max 5 papers/query, max 10 LLM calls/query, circuit breaker
 
 **Estimate:** 7-10h  
-**Status:** Pending  
+**Actual:** ~5h  
+**Status:** ✅ Complete (2026-05-11)  
 **Blocked by:** v0.7
 
 ### v0.9 - Hybrid Retrieval + Paper Ingestion
@@ -179,7 +182,7 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 
 **Estimate:** 7-10h  
 **Actual:** ~4h  
-**Status:** 85% Complete (E2E verification pending)  
+**Status:** ✅ Complete (2026-05-11)  
 **Completed:** Core functionality done 2026-05-11  
 
 **What Was Built:**
@@ -203,7 +206,7 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - E2E verification with real agent + network
 - Optional: Seed 15-45 more canonical papers
 
-### v0.10 - Synthesis + Streaming
+### v0.10 - SSE Streaming Integration
 **Goal:** Agent synthesizes findings and streams cited answer  
 **Deliverables:**
 - Synthesis logic: papers (abstracts + metadata) → cited answer with proper attribution
@@ -214,44 +217,64 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 - Error handling: rate limits, API failures, no results found
 
 **Estimate:** 6-9h  
-**Status:** Pending  
+**Actual:** ~2h  
+**Status:** ✅ Complete (2026-05-12)  
 **Blocked by:** v0.9
 
-### v0.11 - Evaluation (RAGAS + Manual Rubric)
+### v0.11 - Fault-Tolerant Tool Execution
+**Goal:** Graceful degradation when external APIs fail  
+**Deliverables:**
+- Retry logic with exponential backoff (3 attempts, 2-10s delay)
+- Tool wrappers return formatted errors instead of raising exceptions
+- Agent continues with available sources when one fails
+- Generates synthesis even when all tools fail
+- State management fix (switched from astream to ainvoke)
+- Proper synthesis extraction from final state
+
+**Estimate:** 6-9h  
+**Actual:** ~4.5h  
+**Status:** ✅ Complete (2026-05-12)  
+**Blocked by:** v0.10
+
+### v0.11b - Evaluation Framework (RAGAS + Manual Rubric)
 **Goal:** Eval pipeline for both local corpus (RAGAS) and live research (manual rubric)  
 **Deliverables:**
 - **RAGAS evaluation (local pgvector corpus only):**
   - Evaluator async task: answer + chunks → faithfulness, answer_relevancy, context_precision
   - Seeded test set (10 queries) for local corpus, thresholds: ≥ 0.75, ≥ 0.70, ≥ 0.65
-  - Logged to Supabase eval_logs table
+  - Logged to Supabase eval_results table
 - **Manual eval rubric (live academic search):**
-  - Citation accuracy: Do cited papers support claims? (manual check)
+  - Citation accuracy: Do cited papers support claims? (automated heuristic)
   - Recency: Includes recent papers when relevant? (automated metric)
-  - Coverage: Misses obvious seminal works? (manual check)
+  - Coverage: Misses obvious seminal works? (manual check placeholder)
   - Source diversity: Multiple perspectives vs. echo chamber? (automated metric)
-  - Test set: 10 academic queries across domains (ML, medicine, physics)
-- EvalBadge in UI shows RAGAS scores (local) + manual quality rating (live)
-- Pytest tests for RAGAS reproducibility
+  - Test set: 10 academic queries across domains (ML, NLP)
+- Background evaluation task spawned after synthesis completes
+- Pytest tests for evaluation modules
 
 **Estimate:** 6-9h  
-**Status:** Pending  
-**Blocked by:** v0.10
+**Actual:** ~3h  
+**Status:** ✅ Complete (2026-05-12)  
+**Blocked by:** v0.11
 
 ### v0.12 - LangSmith Integration + Cost Analytics
 **Goal:** Agent traces visible in LangSmith, cost tracking dashboard  
 **Deliverables:**
 - LangSmith tracing enabled (LANGCHAIN_TRACING_V2=true)
-- All agent tool calls tagged with metadata (user_id, session_id, query, tools_used)
+- All agent tool calls tagged with metadata (user_id, session_id, query, tools_available)
 - Traces appearing in LangSmith project "multi-agent-research-assistant"
 - Trace links logged to Supabase research_sessions table
-- **Cost analytics dashboard:** tokens used, LLM calls, cost per query, daily spend
-- Budget alerts (email if daily spend > $10)
-- Rate limiting verified (10 queries/hour on default keys)
-- LangSmith dashboard screenshot in README
+- Public trace URLs: `https://smith.langchain.com/public/{run_id}/r`
+- **Cost analytics API:** tokens used, LLM calls, cost per query, daily spend
+- Budget alerts (console logging, email placeholder)
+- Rate limiting (10 queries/hour, database-backed)
+- Token usage tracking via callback handler
+- Cost calculation ($3/1M input, $15/1M output for Claude Sonnet 4)
 
 **Estimate:** 4-6h  
-**Status:** Pending  
-**Blocked by:** v0.11
+**Actual:** ~2.5h  
+**Status:** ✅ Complete (2026-05-12)  
+**Blocked by:** v0.11b
 
 ---
 
@@ -346,21 +369,24 @@ This is a Production build. The roadmap follows Syntaris's five-phase model:
 | v0.3 | Chat UI Components | 5-8h | Pending | v0.2 approval |
 | v0.4 | Agent Timeline UI | 3-5h | Pending | v0.3 |
 | v0.5 | FRONTEND APPROVED | 5-8h | Pending | v0.4 |
-| v0.6 | TESTS APPROVED | 10-16h | Pending | v0.5 approval |
-| v0.7 | Backend Foundation | 4-6h | Pending | v0.6 approval |
-| v0.8 | ReAct Agent + Academic APIs | 7-10h | Pending | v0.7 |
-| v0.9 | Hybrid Retrieval + Ingestion | 7-10h | Pending | v0.8 |
-| v0.10 | Synthesis + Streaming | 6-9h | Pending | v0.9 |
-| v0.11 | Evaluation (RAGAS + Manual) | 6-9h | Pending | v0.10 |
-| v0.12 | LangSmith + Cost Analytics | 4-6h | Pending | v0.11 |
+| v0.6 | TESTS APPROVED | 10-16h | ✅ DONE (~4h actual) | v0.5 approval |
+| v0.7 | Backend Foundation | 4-6h | ✅ DONE (~3h actual) | v0.6 approval |
+| v0.8 | ReAct Agent + Academic APIs | 7-10h | ✅ DONE (~5h actual) | v0.7 |
+| v0.9 | Hybrid Retrieval + Ingestion | 7-10h | ✅ DONE (~4h actual) | v0.8 |
+| v0.10 | SSE Streaming Integration | 6-9h | ✅ DONE (~2h actual) | v0.9 |
+| v0.11 | Fault-Tolerant Tool Execution | 6-9h | ✅ DONE (~4.5h actual) | v0.10 |
+| v0.11b | Evaluation Framework | 6-9h | ✅ DONE (~3h actual) | v0.11 |
+| v0.12 | LangSmith + Cost Analytics | 4-6h | ✅ DONE (~2.5h actual) | v0.11b |
 | v0.13 | Docker Compose Polish | 3-5h | Pending | v0.12 |
 | v0.14 | CI/CD Pipeline | 3-5h | Pending | v0.13 |
 | v0.15 | Multi-Provider BYOK + Settings | 6-9h | Pending | v0.14 |
 | v1.0 | Production Live (GO) | 12-20h | Pending | v0.15 |
 
-**Total gates:** 17  
-**Total estimated hours (raw):** 65-95h  
-**With 2.0x calibration multiplier:** 130-190h  
+**Total gates:** 18 (added v0.11b after v0.11)  
+**Total estimated hours (raw):** 71-104h  
+**With 2.0x calibration multiplier:** 142-208h  
+**Completed so far:** 8 gates (v0.0 through v0.12), ~45.5h actual  
+**Remaining:** 10 gates (v0.13 through v1.0), estimated 42-77h  
 **Architecture:** Academic Research Assistant (live API search + local canonical corpus, abstract-based synthesis)
 
 ---

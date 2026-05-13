@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.middleware.cost_tracking import CostTrackingMiddleware
+from app.middleware.rate_limiting import RateLimitMiddleware
 from app.api.routes import health
 
 
@@ -74,12 +75,19 @@ app.add_middleware(
 # Cost tracking middleware
 app.add_middleware(CostTrackingMiddleware)
 
+# Rate limiting middleware (v0.12)
+app.add_middleware(RateLimitMiddleware)
+
 # Include routers
 app.include_router(health.router)
 
 # Research endpoints (v0.8+)
 from app.api.routes import research
 app.include_router(research.router)
+
+# Analytics endpoints (v0.12+)
+from app.api.routes import analytics
+app.include_router(analytics.router)
 
 
 @app.get("/")

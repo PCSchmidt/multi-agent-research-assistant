@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     openai_api_key: str = Field(..., description="OpenAI API key")
 
     # Semantic Scholar (optional)
-    s2_api_key: str | None = Field(
+    semantic_scholar_api_key: str | None = Field(
         default=None, description="Semantic Scholar API key (optional)"
     )
 

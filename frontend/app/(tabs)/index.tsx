@@ -1,21 +1,26 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageList } from '../../components/chat/MessageList';
 import { PaperDetailsPanel } from '../../components/chat/PaperDetailsPanel';
 import { AgentTimeline } from '../../components/timeline/AgentTimeline';
-import { mockMessages } from '../../data/mockData';
+import { streamResearchQuery } from '../../lib/api';
 import { Citation, Paper, Message, AgentStatus } from '../../types/research';
 
 export default function ChatScreen() {
-  // State for messages (using mock data for v0.3)
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  // State for messages
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for paper details panel
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [isPaperPanelVisible, setIsPaperPanelVisible] = useState(false);
+
+  // Current streaming message state
+  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // Get agent statuses from the last assistant message (if any)
   const lastAssistantMessage = [...messages].reverse().find((m) => m.role === 'assistant');
@@ -43,12 +48,88 @@ export default function ChatScreen() {
     setTimeout(() => setSelectedPaper(null), 300); // Delay clearing to allow exit animation
   };
 
-  const handleSubmit = () => {
-    // TODO: v0.7+ - Wire to backend API
-    // For now, just clear input (no actual submission)
-    if (inputValue.trim()) {
-      setInputValue('');
-      // In future: create user message, trigger API call
+  const handleSubmit = async () => {
+    const query = inputValue.trim();
+    if (!query || isLoading) return;
+
+    // Create user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: query,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+    setCurrentAnswer('');
+    setCurrentSessionId(null);
+
+    // Safety timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      const timeoutMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: '⏱️ Request timed out after 60 seconds. The research query is taking too long. Please try again.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, timeoutMessage]);
+      setIsLoading(false);
+    }, 60000); // 60 second timeout
+
+    try {
+      await streamResearchQuery(query, {
+        onStatus: (message) => {
+          console.log('Agent status:', message);
+          // TODO: Show status in UI (v0.11+)
+        },
+        onPaper: (paper) => {
+          console.log('Paper found:', paper.title);
+          // TODO: Show paper previews during streaming (v0.11+)
+        },
+        onSynthesis: (content) => {
+          setCurrentAnswer(content);
+          // TODO: Show streaming synthesis in message list (v0.11+)
+        },
+        onDone: (result) => {
+          clearTimeout(timeout);
+          // Create assistant message with final synthesis
+          const assistantMessage: Message = {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: result.synthesis,
+            timestamp: new Date(),
+            // TODO: Fetch full papers from session endpoint (v0.11+)
+            papers: [],
+          };
+          setMessages((prev) => [...prev, assistantMessage]);
+          setCurrentAnswer('');
+          setCurrentSessionId(result.session_id);
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          clearTimeout(timeout);
+          // Show error as assistant message (Alert doesn't work on RN Web)
+          const errorMessage: Message = {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: `⚠️ Error: ${error}\n\nThis is likely a network issue preventing the agent from reaching external APIs (Semantic Scholar, arXiv).`,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, errorMessage]);
+          setIsLoading(false);
+        },
+      });
+    } catch (error) {
+      clearTimeout(timeout);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `⚠️ Failed to submit query: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again.`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      setIsLoading(false);
     }
   };
 
@@ -93,11 +174,18 @@ export default function ChatScreen() {
             maxLength={500}
           />
           <TouchableOpacity
-            style={[styles.submitButton, !inputValue.trim() && styles.submitButtonDisabled]}
+            style={[
+              styles.submitButton,
+              (!inputValue.trim() || isLoading) && styles.submitButtonDisabled,
+            ]}
             onPress={handleSubmit}
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isLoading}
           >
-            <Text style={styles.submitButtonText}>Submit Query</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#0F0D0A" />
+            ) : (
+              <Text style={styles.submitButtonText}>Submit Query</Text>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

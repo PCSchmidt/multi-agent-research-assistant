@@ -2,12 +2,27 @@
 
 import httpx
 import xml.etree.ElementTree as ET
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
 from app.models.research import Paper, Author
 from app.config import settings
+
+
+def _is_rate_limit_error(exception: BaseException) -> bool:
+    """Check if exception is a 429 rate limit error."""
+    return (
+        isinstance(exception, httpx.HTTPStatusError)
+        and exception.response.status_code == 429
+    )
 
 ARXIV_API_BASE = "https://export.arxiv.org/api/query"
 
 
+@retry(
+    retry=retry_if_exception(_is_rate_limit_error),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=1, max=10),
+    reraise=True,
+)
 async def search_arxiv(
     query: str,
     category: str | None = None,
@@ -15,6 +30,8 @@ async def search_arxiv(
 ) -> list[Paper]:
     """
     Search arXiv for preprints and papers.
+
+    Automatically retries on rate limit (429) errors with exponential backoff.
 
     Args:
         query: Search query (supports arXiv query syntax)

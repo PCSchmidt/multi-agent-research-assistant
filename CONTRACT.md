@@ -261,4 +261,5 @@ BUDGET_ALERT_THRESHOLD   # Daily spend alert (USD), default: 10
 
 **Contract established:** 2026-05-09  
 **Revised for Academic Research Assistant:** 2026-05-10  
-**Status:** v0.2 complete, awaiting approval to proceed to v0.3
+**Last updated:** 2026-05-12  
+**Status:** v0.12 complete (LangSmith + Cost Analytics), next: v0.13 Docker Compose Polish

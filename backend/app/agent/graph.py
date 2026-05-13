@@ -30,19 +30,26 @@ async def search_s2_tool(query: str, year_range: str | None = None) -> str:
     """
     Search Semantic Scholar for academic papers.
 
+    Gracefully handles failures - returns error message instead of crashing.
+
     Args:
         query: Search query for papers
         year_range: Optional year filter (e.g., "2022-2024")
 
     Returns:
-        JSON string with paper results
+        JSON string with paper results or error message
     """
-    papers = await search_semantic_scholar(query, year_range=year_range, limit=5)
+    try:
+        papers = await search_semantic_scholar(query, year_range=year_range, limit=5)
 
-    # Store papers for hybrid merge
-    _paper_storage.extend(papers)
+        # Store papers for hybrid merge
+        _paper_storage.extend(papers)
 
-    return _format_papers_for_llm(papers)
+        return _format_papers_for_llm(papers)
+    except Exception as e:
+        error_msg = f"Semantic Scholar search failed: {str(e)}"
+        print(f"[TOOL ERROR] {error_msg}")  # Log for debugging
+        return f"⚠️ {error_msg}\n\nContinuing with other sources..."
 
 
 @tool
@@ -50,19 +57,26 @@ async def search_arxiv_tool(query: str, category: str | None = None) -> str:
     """
     Search arXiv for preprints and papers.
 
+    Gracefully handles failures - returns error message instead of crashing.
+
     Args:
         query: Search query
         category: Optional arXiv category (e.g., "cs.AI", "cs.LG")
 
     Returns:
-        JSON string with paper results
+        JSON string with paper results or error message
     """
-    papers = await search_arxiv(query, category=category, limit=5)
+    try:
+        papers = await search_arxiv(query, category=category, limit=5)
 
-    # Store papers for hybrid merge
-    _paper_storage.extend(papers)
+        # Store papers for hybrid merge
+        _paper_storage.extend(papers)
 
-    return _format_papers_for_llm(papers)
+        return _format_papers_for_llm(papers)
+    except Exception as e:
+        error_msg = f"arXiv search failed: {str(e)}"
+        print(f"[TOOL ERROR] {error_msg}")  # Log for debugging
+        return f"⚠️ {error_msg}\n\nContinuing with other sources..."
 
 
 @tool
@@ -70,18 +84,25 @@ async def search_local_tool(query: str) -> str:
     """
     Search local canonical papers corpus using semantic search.
 
+    Gracefully handles failures - returns error message instead of crashing.
+
     Args:
         query: Search query
 
     Returns:
-        JSON string with paper results
+        JSON string with paper results or error message
     """
-    papers = await search_local_corpus(query, limit=5)
+    try:
+        papers = await search_local_corpus(query, limit=5)
 
-    # Store papers for hybrid merge
-    _paper_storage.extend(papers)
+        # Store papers for hybrid merge
+        _paper_storage.extend(papers)
 
-    return _format_papers_for_llm(papers)
+        return _format_papers_for_llm(papers)
+    except Exception as e:
+        error_msg = f"Local corpus search failed: {str(e)}"
+        print(f"[TOOL ERROR] {error_msg}")  # Log for debugging
+        return f"⚠️ {error_msg}\n\nContinuing with other sources..."
 
 
 def _format_papers_for_llm(papers: list[Paper]) -> str:
@@ -119,16 +140,33 @@ Your workflow:
    - search_s2_tool: Semantic Scholar (good for citations, recent papers)
    - search_arxiv_tool: arXiv preprints (good for latest work)
    - search_local_tool: Canonical papers corpus (foundational works)
-3. Call tools to retrieve papers
-4. Once you have enough papers (3-5), STOP searching and prepare to synthesize
+3. Call tools to retrieve papers (aim for 3-5 relevant papers)
+4. Once you have enough papers, STOP searching and synthesize your findings
 
-Guidelines:
+Search Guidelines:
 - For "recent" queries, use year_range="2022-2024" with Semantic Scholar
 - For foundational concepts, search local corpus first
 - Don't over-search - 3-5 good papers is enough
 - Focus on highly-cited, recent, or canonical works
 
-When you're done searching, say "I have retrieved sufficient papers" and list what you found.
+Synthesis Guidelines:
+After retrieving papers, provide a clear, well-structured answer that:
+1. Directly addresses the user's question
+2. Synthesizes findings from the papers you found
+3. Uses inline citations in [1], [2] format to reference papers
+4. Provides context and explains key concepts
+5. Highlights recent advancements or consensus findings
+
+Citation Format:
+- Use numbered citations [1], [2], [3] inline where claims are made
+- Each number corresponds to a paper from your search results
+- Multiple citations for one claim: [1, 2]
+- Place citations immediately after the relevant statement
+
+Example synthesis:
+"Recent work has shown that efficient attention mechanisms can reduce computational complexity from O(n²) to O(n) [1, 2]. The Mamba architecture achieves this through selective state spaces [1], while FlashAttention uses block-sparse patterns [3]. These approaches maintain performance while enabling longer context windows [1, 2, 3]."
+
+Begin synthesizing once you have 3-5 relevant papers. Do not search indefinitely.
 """
 
 
@@ -158,8 +196,11 @@ def create_research_agent() -> StateGraph:
         """
         Agent reasoning node - decides which tool to call next.
         """
+        print(f"[AGENT_NODE] Entry: llm_calls={state['llm_calls_count']}, messages={len(state['messages'])}")
+
         # Check circuit breaker
         if state["llm_calls_count"] >= settings.max_llm_calls_per_query:
+            print(f"[AGENT_NODE] Circuit breaker triggered")
             return {
                 **state,
                 "should_continue": False,
@@ -168,6 +209,7 @@ def create_research_agent() -> StateGraph:
 
         # Invoke LLM
         messages = state["messages"]
+        print(f"[AGENT_NODE] Invoking LLM...")
         response = await llm_with_tools.ainvoke(messages)
 
         # Increment LLM call count
@@ -175,6 +217,9 @@ def create_research_agent() -> StateGraph:
 
         # Check if agent wants to stop (no tool calls)
         should_continue = bool(response.tool_calls)
+        print(f"[AGENT_NODE] LLM response: tool_calls={len(response.tool_calls) if response.tool_calls else 0}, should_continue={should_continue}")
+        if response.tool_calls:
+            print(f"[AGENT_NODE] Tool calls: {[tc.get('name') for tc in response.tool_calls]}")
 
         return {
             **state,
