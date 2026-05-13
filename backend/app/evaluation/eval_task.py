@@ -8,13 +8,11 @@ This module provides background evaluation of research responses:
 
 import asyncio
 from uuid import UUID
-from datetime import datetime
 
-from app.evaluation.ragas_evaluator import evaluator as ragas_evaluator
-from app.evaluation.manual_rubric import compute_manual_metrics
-from app.models.research import Paper
 from app.db.client import get_supabase_admin_client
-from app.config import settings
+from app.evaluation.manual_rubric import compute_manual_metrics
+from app.evaluation.ragas_evaluator import evaluator as ragas_evaluator
+from app.models.research import Paper
 
 
 async def evaluate_research_session(

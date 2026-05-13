@@ -1,9 +1,10 @@
 """Unit tests for local corpus search tool."""
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from app.tools.local_corpus import search_local_corpus, _embed_text
-from app.models.research import Paper, Author
+
+import pytest
+
+from app.tools.local_corpus import _embed_text, search_local_corpus
 
 
 @pytest.fixture

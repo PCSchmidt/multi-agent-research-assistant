@@ -1,6 +1,6 @@
 """LangSmith callback handler for capturing trace URLs and token usage."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 from langchain_core.callbacks import AsyncCallbackHandler
@@ -20,22 +20,22 @@ class LangSmithTraceCallback(AsyncCallbackHandler):
     def __init__(self):
         """Initialize callback handler."""
         super().__init__()
-        self.run_id: Optional[UUID] = None
+        self.run_id: UUID | None = None
         self.total_tokens = 0
         self.input_tokens = 0
         self.output_tokens = 0
         self.llm_calls = 0
-        self.trace_url: Optional[str] = None
+        self.trace_url: str | None = None
 
     async def on_chain_start(
         self,
-        serialized: Dict[str, Any],
-        inputs: Dict[str, Any],
+        serialized: dict[str, Any],
+        inputs: dict[str, Any],
         *,
         run_id: UUID,
-        parent_run_id: Optional[UUID] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        parent_run_id: UUID | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Capture the root run_id when the chain starts."""
@@ -52,7 +52,7 @@ class LangSmithTraceCallback(AsyncCallbackHandler):
         response: LLMResult,
         *,
         run_id: UUID,
-        parent_run_id: Optional[UUID] = None,
+        parent_run_id: UUID | None = None,
         **kwargs: Any,
     ) -> None:
         """Capture token usage from LLM responses."""
@@ -70,7 +70,7 @@ class LangSmithTraceCallback(AsyncCallbackHandler):
 
             print(f"[LANGSMITH] LLM call #{self.llm_calls}: {input_tokens} in, {output_tokens} out")
 
-    def get_trace_info(self) -> Dict[str, Any]:
+    def get_trace_info(self) -> dict[str, Any]:
         """
         Get captured trace information.
 

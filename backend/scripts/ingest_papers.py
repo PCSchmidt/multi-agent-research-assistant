@@ -7,18 +7,18 @@ Usage:
     python scripts/ingest_papers.py --seed-defaults
 """
 
+import argparse
 import asyncio
 import json
-import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from app.models.research import Author
 from app.tools.local_corpus import add_canonical_paper
 from app.tools.semantic_scholar import get_paper_details_s2
-from app.models.research import Author
 
 
 async def ingest_from_file(file_path: str):
@@ -42,7 +42,7 @@ async def ingest_from_file(file_path: str):
         ...
     ]
     """
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         papers = json.load(f)
 
     print(f"Ingesting {len(papers)} papers from {file_path}...")

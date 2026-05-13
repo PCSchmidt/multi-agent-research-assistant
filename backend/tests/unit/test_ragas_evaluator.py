@@ -8,8 +8,9 @@ These tests verify:
 """
 
 import pytest
+
 from app.evaluation.ragas_evaluator import RAGASEvaluator
-from app.models.research import Paper, Author
+from app.models.research import Author, Paper
 
 
 @pytest.fixture

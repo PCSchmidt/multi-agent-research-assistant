@@ -1,13 +1,12 @@
 """Budget alert system for monitoring daily spend."""
 
 from datetime import datetime, timedelta
-from typing import Optional
 
-from app.db.client import get_supabase_admin_client
 from app.config import settings
+from app.db.client import get_supabase_admin_client
 
 
-async def check_daily_budget(user_id: Optional[str] = None) -> dict:
+async def check_daily_budget(user_id: str | None = None) -> dict:
     """
     Check if daily spend has exceeded budget threshold.
 

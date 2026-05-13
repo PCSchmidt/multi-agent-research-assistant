@@ -1,11 +1,12 @@
 """Cost tracking middleware for LLM usage."""
 
 import time
-from typing import Callable
+from collections.abc import Callable
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from app.config import settings
 
+from app.config import settings
 
 # Claude Sonnet 4 pricing (as of 2026-05-10)
 CLAUDE_SONNET_4_INPUT_PRICE_PER_MTOK = 3.0  # $3 per 1M tokens

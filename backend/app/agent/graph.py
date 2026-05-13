@@ -1,18 +1,17 @@
 """LangGraph research agent with ReAct pattern."""
 
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
 from app.agent.state import ResearchState
 from app.config import settings
-from app.models.research import AgentStatus, Author, Paper
+from app.models.research import Paper
 from app.tools.arxiv_search import search_arxiv
 from app.tools.local_corpus import search_local_corpus
 from app.tools.semantic_scholar import search_semantic_scholar
-
 
 # Module-level storage for papers during tool execution
 # This allows tools to store Paper objects while returning formatted text to LLM
@@ -196,7 +195,7 @@ def create_research_agent() -> StateGraph:
 
         # Check circuit breaker
         if state["llm_calls_count"] >= settings.max_llm_calls_per_query:
-            print(f"[AGENT_NODE] Circuit breaker triggered")
+            print("[AGENT_NODE] Circuit breaker triggered")
             return {
                 **state,
                 "should_continue": False,
@@ -205,7 +204,7 @@ def create_research_agent() -> StateGraph:
 
         # Invoke LLM
         messages = state["messages"]
-        print(f"[AGENT_NODE] Invoking LLM...")
+        print("[AGENT_NODE] Invoking LLM...")
         response = await llm_with_tools.ainvoke(messages)
 
         # Increment LLM call count

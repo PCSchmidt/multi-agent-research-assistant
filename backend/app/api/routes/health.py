@@ -1,9 +1,10 @@
 """Health check endpoint."""
 
 from fastapi import APIRouter
-from app.models.research import HealthResponse
-from app.db.client import check_db_connection
+
 from app.config import settings
+from app.db.client import check_db_connection
+from app.models.research import HealthResponse
 
 router = APIRouter(tags=["health"])
 

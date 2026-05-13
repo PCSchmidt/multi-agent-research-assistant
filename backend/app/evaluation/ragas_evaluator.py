@@ -9,16 +9,13 @@ RAGAS evaluation is primarily for local corpus queries where we have
 full control over the retrieval pipeline.
 """
 
-from typing import Any
-from uuid import UUID
 import asyncio
 
-from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevancy, context_precision
 from datasets import Dataset
+from ragas import evaluate
+from ragas.metrics import answer_relevancy, context_precision, faithfulness
 
 from app.models.research import Paper
-from app.config import settings
 
 
 class RAGASEvaluator:

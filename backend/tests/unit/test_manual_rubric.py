@@ -1,12 +1,13 @@
 """Unit tests for manual evaluation rubric."""
 
 import pytest
+
 from app.evaluation.manual_rubric import (
-    compute_manual_metrics,
     _compute_source_diversity,
+    compute_manual_metrics,
     extract_coverage_gaps_prompt,
 )
-from app.models.research import Paper, Author
+from app.models.research import Author, Paper
 
 
 @pytest.fixture

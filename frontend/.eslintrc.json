@@ -1,13 +1,26 @@
 {
+  "parser": "@typescript-eslint/parser",
   "extends": [
-    "expo",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-native/all",
     "prettier"
   ],
-  "plugins": ["prettier"],
+  "plugins": ["@typescript-eslint", "react", "react-native", "prettier"],
+  "env": {
+    "react-native/react-native": true
+  },
   "rules": {
-    "prettier/prettier": ["error"],
+    "prettier/prettier": "error",
     "react/prop-types": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   },
   "ignorePatterns": ["node_modules/", ".expo/", "dist/", "web-build/"]
 }

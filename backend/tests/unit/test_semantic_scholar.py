@@ -1,9 +1,10 @@
 """Tests for Semantic Scholar tool."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
-from app.tools.semantic_scholar import search_semantic_scholar, get_paper_details_s2
-from app.models.research import Paper
+
+import pytest
+
+from app.tools.semantic_scholar import get_paper_details_s2, search_semantic_scholar
 
 
 @pytest.mark.asyncio
@@ -109,7 +110,7 @@ async def test_get_paper_details_success():
 async def test_get_paper_details_not_found():
     """Test handling of paper not found."""
     with patch("httpx.AsyncClient.get") as mock_get:
-        from httpx import HTTPStatusError, Response, Request
+        from httpx import HTTPStatusError, Request, Response
 
         mock_response = Response(
             status_code=404,

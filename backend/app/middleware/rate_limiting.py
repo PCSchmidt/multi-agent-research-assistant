@@ -1,10 +1,9 @@
 """Rate limiting middleware for research queries."""
 
 from datetime import datetime, timedelta
-from typing import Dict
-from fastapi import Request, HTTPException
+
+from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
 
 from app.config import settings
 from app.db.client import get_supabase_admin_client
@@ -99,7 +98,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
 # In-memory rate limit tracker (fallback if database is unavailable)
 # Maps user_id -> list of query timestamps
-_in_memory_tracker: Dict[str, list[datetime]] = {}
+_in_memory_tracker: dict[str, list[datetime]] = {}
 
 
 def check_rate_limit_in_memory(user_id: str, limit: int = 10) -> bool:

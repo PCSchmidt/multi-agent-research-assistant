@@ -1,10 +1,11 @@
 """Semantic Scholar API tool for searching academic papers."""
 
+
 import httpx
-from typing import Literal
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
-from app.models.research import Paper, Author
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
+
 from app.config import settings
+from app.models.research import Author, Paper
 
 
 def _is_rate_limit_error(exception: BaseException) -> bool:

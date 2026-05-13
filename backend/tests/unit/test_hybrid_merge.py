@@ -1,9 +1,11 @@
 """Unit tests for hybrid merge logic in agent."""
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+
 from app.agent import graph
-from app.models.research import Paper, Author
+from app.models.research import Author, Paper
 
 
 @pytest.fixture(autouse=True)

@@ -3,17 +3,18 @@
 import json
 from datetime import datetime
 from uuid import uuid4
+
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
-from app.agent.graph import run_research_query, create_research_agent, RESEARCH_AGENT_PROMPT
+from app.agent.graph import RESEARCH_AGENT_PROMPT, create_research_agent, run_research_query
 from app.agent.state import ResearchState
-from app.models.research import ResearchResponse, Paper, Citation
 from app.db.client import get_supabase_admin_client
 from app.evaluation.eval_task import spawn_evaluation_task
 from app.middleware.langsmith_callback import LangSmithTraceCallback
-from langchain_core.messages import SystemMessage, HumanMessage
+from app.models.research import Paper, ResearchResponse
 
 router = APIRouter(tags=["research"], prefix="/api/research")
 
@@ -238,19 +239,19 @@ async def stream_research_query(request_body: QueryRequest):
             print(f"[DB] Session created: {session_id}")
 
             # Send initial status
-            print(f"[EVENT_GEN] Yielding initial status event")
+            print("[EVENT_GEN] Yielding initial status event")
             yield _format_sse_event(
                 "status",
                 {"message": "Starting research query...", "session_id": session_id},
             )
 
             # Create agent
-            print(f"[EVENT_GEN] Creating research agent...")
+            print("[EVENT_GEN] Creating research agent...")
             agent = create_research_agent()
             print(f"[EVENT_GEN] Agent created: {type(agent)}")
 
             # Initialize state
-            print(f"[EVENT_GEN] Initializing agent state...")
+            print("[EVENT_GEN] Initializing agent state...")
             initial_state: ResearchState = {
                 "messages": [
                     SystemMessage(content=RESEARCH_AGENT_PROMPT),
@@ -269,7 +270,7 @@ async def stream_research_query(request_body: QueryRequest):
             print(f"[EVENT_GEN] State initialized with {len(initial_state['messages'])} messages")
 
             # Stream agent execution with LangSmith metadata
-            print(f"[STREAM] Starting agent.ainvoke()...")
+            print("[STREAM] Starting agent.ainvoke()...")
 
             # Create callback handler to capture trace info and token usage
             trace_callback = LangSmithTraceCallback()
@@ -309,7 +310,7 @@ async def stream_research_query(request_body: QueryRequest):
                 "llm_calls_count": trace_info["llm_calls"],
                 "completed_at": datetime.now().isoformat(),
             }).eq("id", session_id).execute()
-            print(f"[DB] Session updated with trace URL and cost data")
+            print("[DB] Session updated with trace URL and cost data")
 
             # For now, just yield the final result
             # TODO v0.12: Switch back to astream() and implement proper state accumulation for real-time updates

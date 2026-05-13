@@ -1,9 +1,11 @@
 """Agent state definition for LangGraph."""
 
 from typing import Annotated, TypedDict
+
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
-from app.models.research import Paper, Citation, EvalScores, AgentStatus
+
+from app.models.research import AgentStatus, Citation, EvalScores, Paper
 
 
 class ResearchState(TypedDict):

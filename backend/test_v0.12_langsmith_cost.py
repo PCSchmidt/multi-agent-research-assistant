@@ -12,10 +12,9 @@ Run with: python test_v0.12_langsmith_cost.py
 """
 
 import asyncio
-import httpx
 import json
-from datetime import datetime
 
+import httpx
 
 BASE_URL = "http://localhost:8000"
 TEST_QUERY = "What is the attention mechanism in transformers?"
@@ -121,11 +120,11 @@ async def test_langsmith_and_cost_tracking():
 
                     if trace_url:
                         print(f"✓ LangSmith Trace URL: {trace_url}")
-                        print(f"  You can view the trace in your LangSmith dashboard!")
+                        print("  You can view the trace in your LangSmith dashboard!")
                     else:
                         print("⚠ Trace URL not captured (may take a moment to update)")
 
-                    print(f"\n  Token Usage:")
+                    print("\n  Token Usage:")
                     print(f"    Input tokens:  {input_tokens:,}")
                     print(f"    Output tokens: {output_tokens:,}")
                     print(f"    Total tokens:  {total_tokens:,}")
@@ -146,7 +145,7 @@ async def test_langsmith_and_cost_tracking():
             response = await client.get(f"{BASE_URL}/api/analytics/cost/summary?days=1")
             if response.status_code == 200:
                 summary = response.json()
-                print(f"✓ Cost Summary (last 24h):")
+                print("✓ Cost Summary (last 24h):")
                 print(f"    Total queries: {summary.get('total_queries', 0)}")
                 print(f"    Total cost: ${summary.get('total_cost_usd', 0):.6f}")
                 print(f"    Avg cost/query: ${summary.get('avg_cost_per_query', 0):.6f}")
@@ -155,7 +154,7 @@ async def test_langsmith_and_cost_tracking():
             response = await client.get(f"{BASE_URL}/api/analytics/cost/budget-status")
             if response.status_code == 200:
                 budget = response.json()
-                print(f"\n✓ Budget Status:")
+                print("\n✓ Budget Status:")
                 print(f"    Today's spend: ${budget.get('today_spend_usd', 0):.6f}")
                 print(f"    Daily threshold: ${budget.get('daily_threshold_usd', 0):.2f}")
                 print(f"    Percentage used: {budget.get('percentage_used', 0):.1f}%")
@@ -176,9 +175,9 @@ async def test_langsmith_and_cost_tracking():
     print("=" * 80)
     print()
     print("Next steps:")
-    print(f"1. Visit your LangSmith dashboard to see the trace")
-    print(f"2. Check Supabase research_sessions table for trace_url and cost data")
-    print(f"3. Check Supabase eval_results table for RAGAS scores")
+    print("1. Visit your LangSmith dashboard to see the trace")
+    print("2. Check Supabase research_sessions table for trace_url and cost data")
+    print("3. Check Supabase eval_results table for RAGAS scores")
     print()
 
 

@@ -1,13 +1,12 @@
 """Cost analytics endpoints."""
 
 from datetime import datetime, timedelta
-from typing import List, Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from app.db.client import get_supabase_admin_client
 from app.config import settings
-
+from app.db.client import get_supabase_admin_client
 
 router = APIRouter(tags=["analytics"], prefix="/api/analytics")
 
@@ -35,7 +34,7 @@ class QueryCost(BaseModel):
     output_tokens: int
     llm_calls: int
     created_at: str
-    langsmith_trace_url: Optional[str] = None
+    langsmith_trace_url: str | None = None
 
 
 class DailyCostSummary(BaseModel):
@@ -50,7 +49,7 @@ class DailyCostSummary(BaseModel):
 
 @router.get("/cost/summary", response_model=CostSummary)
 async def get_cost_summary(
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
     days: int = Query(7, ge=1, le=90, description="Number of days to include"),
 ):
     """
@@ -107,9 +106,9 @@ async def get_cost_summary(
         raise HTTPException(status_code=500, detail=f"Failed to fetch cost summary: {str(e)}")
 
 
-@router.get("/cost/queries", response_model=List[QueryCost])
+@router.get("/cost/queries", response_model=list[QueryCost])
 async def get_query_costs(
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
     limit: int = Query(50, ge=1, le=500, description="Number of queries to return"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
 ):
@@ -161,9 +160,9 @@ async def get_query_costs(
         raise HTTPException(status_code=500, detail=f"Failed to fetch query costs: {str(e)}")
 
 
-@router.get("/cost/daily", response_model=List[DailyCostSummary])
+@router.get("/cost/daily", response_model=list[DailyCostSummary])
 async def get_daily_costs(
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
     days: int = Query(30, ge=1, le=365, description="Number of days to include"),
 ):
     """
@@ -232,7 +231,7 @@ async def get_daily_costs(
 
 @router.get("/cost/budget-status")
 async def get_budget_status(
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
 ):
     """
     Check current spend against daily budget threshold.
