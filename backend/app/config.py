@@ -29,8 +29,10 @@ class Settings(BaseSettings):
         ..., description="Supabase service role key (for admin operations)"
     )
 
-    # Anthropic (Claude)
-    anthropic_api_key: str = Field(..., description="Anthropic API key")
+    # Anthropic (Claude) - Optional when using OpenRouter
+    anthropic_api_key: str | None = Field(
+    default=None, description="Anthropic API key (optional, falls back to OpenRouter)"
+)
 
     # OpenAI (Embeddings)
     openai_api_key: str = Field(..., description="OpenAI API key")
@@ -45,6 +47,16 @@ class Settings(BaseSettings):
     langchain_endpoint: str = "https://api.smith.langchain.com"
     langchain_api_key: str = Field(..., description="LangSmith API key")
     langchain_project: str = "multi-agent-research-assistant"
+
+    # Model Configuration
+    default_model: str = Field(
+        default="anthropic/claude-3.5-haiku",
+        description="Default LLM model (OpenRouter format: provider/model-name)",
+    )
+    openrouter_api_key: str | None = Field(
+        default=None, description="OpenRouter API key (optional, for multi-provider access)"
+    )
+
 
     # Cost Controls
     max_papers_per_query: int = Field(
