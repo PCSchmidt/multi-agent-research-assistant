@@ -3,9 +3,70 @@
 
 ## Current Version: v0.15
 **Gate:** Multi-Provider BYOK + Settings  
-**Status:** 🚧 IN PROGRESS  
+**Status:** ✅ COMPLETE - Awaiting approval  
 **Estimate:** 6-9h  
+**Actual:** ~6h
 **Started:** 2026-05-13  
+**Completed:** 2026-05-13
+
+## Deliverables (v0.15) - All Complete
+- [x] Database schema: `user_api_keys` table with RLS policies
+  - [x] Columns: id, user_id, provider, encrypted_key, created_at, updated_at
+  - [x] RLS policy: users can only access their own keys
+  - [x] pgcrypto extension enabled for encryption
+  - [x] Migration SQL file created
+- [x] Backend CRUD endpoints (`/api/keys`):
+  - [x] POST /api/keys - Save/update user key
+  - [x] GET /api/keys - List user's keys (metadata only)
+  - [x] DELETE /api/keys/{provider} - Delete user key
+  - [x] POST /api/keys/{provider}/test - Test key connection
+  - [x] Pydantic models (APIKeyCreate, APIKeyResponse, APIKeyTestResponse)
+  - [x] Fernet encryption utilities
+  - [x] Full unit test coverage (8 tests passing)
+- [x] Key hierarchy implementation:
+  - [x] User keys override owner's default keys
+  - [x] Fallback to default keys if user keys not present
+  - [x] Dynamic LLM selection: Anthropic > OpenAI > OpenRouter priority
+- [x] Frontend settings screen (Expo/React Native):
+  - [x] Provider selection UI (Anthropic, OpenAI, OpenRouter)
+  - [x] API key input fields with show/hide toggle
+  - [x] Save/test connection/delete buttons
+  - [x] Loading and error states with user feedback
+  - [x] Settings accessible from main tab navigation
+- [x] Agent integration:
+  - [x] Agent factory accepts user_id parameter
+  - [x] Research endpoint passes user_id to agent
+  - [x] LLM dynamically selected based on available keys
+  - [x] ChatAnthropic, ChatOpenAI, and OpenRouter (via OpenAI API) supported
+
+**Files Created:**
+- `backend/app/utils/key_hierarchy.py` - Key hierarchy logic (user > default)
+- `frontend/lib/apiKeys.ts` - API client for key management endpoints
+
+**Files Modified:**
+- [backend/app/agent/graph.py](backend/app/agent/graph.py:168-217) - Async factory with user_id, dynamic LLM selection
+- [backend/app/api/routes/research.py](backend/app/api/routes/research.py:250) - Pass user_id to agent factory
+- [backend/requirements.txt](backend/requirements.txt:15-16) - Added langchain-community, litellm
+- [frontend/app/(tabs)/settings.tsx](frontend/app/(tabs)/settings.tsx) - Full API key management UI
+
+**What Works:**
+- ✅ Backend API key CRUD operations (save, list, delete, test)
+- ✅ Key encryption using Fernet (stored encrypted in database)
+- ✅ Key hierarchy: user keys override owner defaults
+- ✅ Dynamic LLM selection based on available keys
+- ✅ Frontend settings UI with complete key management
+- ✅ All backend tests passing (44 passed, 2 skipped)
+
+**Known Issues:**
+- RAGAS integration tests skipped due to OpenAIEmbeddings.embed_query deprecation (LangChain/RAGAS version mismatch)
+- Frontend Jest tests failing due to React 19 compatibility (known issue from v0.5)
+- E2E testing not performed (manual verification recommended)
+
+**Dependencies Added:**
+- `langchain-community>=0.3.0` - Multi-provider LangChain wrappers
+- `litellm>=1.62.0` - Future provider expansion support
+
+**Next:** v1.0 - Production deployment (iOS, Android, Web)
 
 ---
 
