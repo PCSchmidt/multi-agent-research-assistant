@@ -8,44 +8,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [v0.15] - 2026-05-13 - Multi-Provider BYOK + Settings (IN PROGRESS)
+## [v1.0] - 2026-05-14 - 🚀 Production Live (IN PROGRESS)
 
-### Added (Backend - Complete)
+### In Progress
 
+- **Production Deployments**
+  - Backend API deployed to Railway
+  - Web frontend deployed to Vercel  
+  - Production Supabase database configuration
+  - Environment variables configured for production
+  
+- **Documentation**
+  - PRODUCTION_SETUP.md: Complete deployment walkthrough
+  - RAILWAY_ENV_VARS.md: Environment variables reference
+  - Database migrations ready for production Supabase
+
+### Pending
+
+- Mobile app deployments (requires Apple Developer + Google Play accounts)
+- EAS Build configuration for iOS and Android
+- App store assets and metadata
+- Controlled access configuration
+- HANDOFF.md portfolio case study
+- GitHub repo made public
+
+---
+
+## [v0.15] - 2026-05-13 - 🔑 Multi-Provider BYOK + Settings
+
+### Added - Backend
+
+- **Key Hierarchy System**
+  - User keys override owner's default keys
+  - Fallback to owner defaults when user keys not present
+  - Dynamic LLM selection: Anthropic > OpenAI > OpenRouter priority
+  - Agent factory accepts user_id parameter for key resolution
+  
 - **API Key Management Endpoints**
-  - POST /api/keys - Save/update user API keys with encryption
-  - GET /api/keys - List user's API keys (metadata only, no actual keys)
+  - POST /api/keys - Save/update user API keys with Fernet encryption
+  - GET /api/keys - List user's API keys (metadata only, never exposes actual keys)
   - DELETE /api/keys/{provider} - Delete user's API key
   - POST /api/keys/{provider}/test - Test API key validity with actual provider
   - Pydantic models: APIKeyCreate, APIKeyResponse, APIKeyTestResponse
-  - Provider enum: Literal["anthropic", "openai", "openrouter"]
+  - Provider support: anthropic, openai, openrouter
 
-- **Encryption Utilities**
-  - Fernet-based symmetric encryption for API key storage
-  - PBKDF2HMAC key derivation from service role key
-  - Base64 encoding for encrypted data
+- **Encryption & Security**
+  - Fernet symmetric encryption for API key storage
+  - Keys encrypted before database storage
+  - RLS policies ensure users only access their own keys
+  - Service role key used for encryption key derivation
 
 - **Database Schema**
-  - user_api_keys table with RLS policies
+  - user_api_keys table with complete RLS policies
   - Columns: id, user_id, provider, encrypted_key, created_at, updated_at
-  - Unique constraint: one key per user per provider
+  - Unique constraint: one key per provider per user
   - Auto-updating updated_at trigger
-  - Migration file: supabase/migrations/20260513_user_api_keys.sql
+  - pgcrypto extension enabled
+  - Migration: supabase/migrations/20260513_user_api_keys.sql
 
-- **Testing**
-  - Full unit test coverage (8 tests, all passing)
-  - Tests for CRUD operations, key testing, error cases
-  - Mocked Supabase and provider clients
+### Added - Frontend
 
-### Dependencies
+- **Settings Screen UI**
+  - Complete API key management interface (Expo/React Native)
+  - Provider sections for Anthropic, OpenAI, OpenRouter
+  - API key input fields with show/hide security toggle
+  - Save, test connection, and delete buttons per provider
+  - Loading states and error handling with user feedback
+  - Settings accessible from main tab navigation
+  
+- **API Client**
+  - frontend/lib/apiKeys.ts - Complete API client for key management
+  - Type-safe interfaces matching backend Pydantic models
+  - Error handling with user-friendly messages
 
-- Added cryptography>=44.0.0 for encryption
+### Added - Agent Integration
+
+- **Dynamic Provider Selection**
+  - Agent graph modified to accept user_id parameter
+  - get_api_keys() utility fetches and decrypts user keys
+  - ChatAnthropic, ChatOpenAI, or OpenRouter selected based on available keys
+  - Research endpoint passes user_id to agent factory
+  - Logging shows which provider is being used
+
+### Added - Dependencies
+
+- langchain-community>=0.3.0 - Multi-provider LangChain wrappers
+- litellm>=1.62.0 - Future provider expansion support
+- cryptography>=44.0.0 - Fernet encryption
+
+### Fixed
+
+- RAGAS evaluator API compatibility (handles list vs scalar return values)
+- Hybrid merge tests updated to pass user_id to agent factory
+- Test suite: 44 passing, 2 skipped (RAGAS OpenAIEmbeddings deprecation)
 
 ### Status
 
-- Backend: ✅ Complete (~2.5h)
-- Frontend: ⏳ Pending (~2-3h)
-- LiteLLM Integration: ⏳ Pending (~1h)
+- Gate closed: 2026-05-13
+- Actual hours: ~6h (estimate: 6-9h)
+- Status: 100% complete
+- Next gate: v1.0 - Production Live
 
 ---
 
