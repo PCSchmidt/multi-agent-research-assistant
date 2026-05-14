@@ -245,9 +245,9 @@ async def stream_research_query(request_body: QueryRequest):
                 {"message": "Starting research query...", "session_id": session_id},
             )
 
-            # Create agent
-            print("[EVENT_GEN] Creating research agent...")
-            agent = create_research_agent()
+            # Create agent with user-specific API keys
+            print(f"[EVENT_GEN] Creating research agent for user: {user_id}...")
+            agent = await create_research_agent(user_id)
             print(f"[EVENT_GEN] Agent created: {type(agent)}")
 
             # Initialize state

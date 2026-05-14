@@ -1,6 +1,7 @@
 """LangGraph research agent with ReAct pattern."""
 
 from langchain_anthropic import ChatAnthropic
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 from langgraph.graph import END, StateGraph
@@ -12,6 +13,7 @@ from app.models.research import Paper
 from app.tools.arxiv_search import search_arxiv
 from app.tools.local_corpus import search_local_corpus
 from app.tools.semantic_scholar import search_semantic_scholar
+from app.utils.key_hierarchy import get_api_keys
 
 # Module-level storage for papers during tool execution
 # This allows tools to store Paper objects while returning formatted text to LLM
@@ -165,22 +167,53 @@ Begin synthesizing once you have 3-5 relevant papers. Do not search indefinitely
 """
 
 
-def create_research_agent() -> StateGraph:
+async def create_research_agent(user_id: str) -> StateGraph:
     """
     Create LangGraph research agent with ReAct pattern.
 
-    The agent can use search tools to find papers and tracks
-    its progress via agent statuses.
+    The agent uses the user's API keys if available, falling back to owner defaults.
+    Provider priority: Anthropic (Claude) > OpenAI > OpenRouter
+
+    Args:
+        user_id: User ID for fetching API keys from key hierarchy
 
     Returns:
         Compiled StateGraph ready for invocation
     """
-    # Initialize LLM
-    llm = ChatAnthropic(
-        model="claude-sonnet-4-20250514",
-        api_key=settings.anthropic_api_key,
-        temperature=0.1,
-    )
+    # Fetch API keys with hierarchy (user keys override defaults)
+    api_keys = await get_api_keys(user_id)
+
+    # Select LLM based on available keys (priority: Anthropic > OpenAI > OpenRouter)
+    llm = None
+    provider_used = None
+
+    if api_keys.anthropic_key:
+        llm = ChatAnthropic(
+            model="claude-sonnet-4-20250514",
+            api_key=api_keys.anthropic_key,
+            temperature=0.1,
+        )
+        provider_used = "anthropic"
+    elif api_keys.openai_key:
+        llm = ChatOpenAI(
+            model="gpt-4o",
+            api_key=api_keys.openai_key,
+            temperature=0.1,
+        )
+        provider_used = "openai"
+    elif api_keys.openrouter_key:
+        # OpenRouter uses OpenAI-compatible API
+        llm = ChatOpenAI(
+            model="anthropic/claude-sonnet-4",  # OpenRouter model path
+            api_key=api_keys.openrouter_key,
+            base_url="https://openrouter.ai/api/v1",
+            temperature=0.1,
+        )
+        provider_used = "openrouter"
+    else:
+        raise ValueError("No valid API keys found for any provider")
+
+    print(f"[AGENT] Using provider: {provider_used}")
 
     # Bind tools to LLM
     tools = [search_s2_tool, search_arxiv_tool, search_local_tool]

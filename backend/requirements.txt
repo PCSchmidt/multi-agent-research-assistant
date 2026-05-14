@@ -12,8 +12,10 @@ psycopg2-binary>=2.9.0
 langchain>=0.3.0
 langchain-anthropic>=0.3.0
 langchain-openai>=0.3.0
+langchain-community>=0.3.0
 langgraph>=0.2.60
 langsmith>=0.8.0
+litellm>=1.62.0
 
 # Vector embeddings
 openai>=1.50.0

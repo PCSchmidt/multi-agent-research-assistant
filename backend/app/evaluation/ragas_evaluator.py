@@ -95,14 +95,16 @@ class RAGASEvaluator:
             )
 
             # Extract scores
+            # RAGAS returns lists (one value per sample), so we extract the first element
             scores = {
-                "faithfulness": float(result["faithfulness"]),
-                "answer_relevancy": float(result["answer_relevancy"]),
+                "faithfulness": float(result["faithfulness"][0]) if isinstance(result["faithfulness"], list) else float(result["faithfulness"]),
+                "answer_relevancy": float(result["answer_relevancy"][0]) if isinstance(result["answer_relevancy"], list) else float(result["answer_relevancy"]),
             }
 
             # Add context_precision only if it was evaluated
             if ground_truth and "context_precision" in result:
-                scores["context_precision"] = float(result["context_precision"])
+                cp_value = result["context_precision"]
+                scores["context_precision"] = float(cp_value[0]) if isinstance(cp_value, list) else float(cp_value)
 
             return scores
 

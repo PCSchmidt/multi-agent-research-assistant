@@ -137,11 +137,9 @@ async def test_extract_papers_node_retrieves_from_storage(mock_s2_papers):
     }
 
     # Create agent and get extract_papers_node
-    _ = graph.create_research_agent()
-    # Access the node function via the workflow
-    # For testing, we'll call it directly
+    # Use mock user_id for testing (will use default keys from settings)
     from app.agent.graph import create_research_agent
-    _ = create_research_agent()
+    _ = await create_research_agent(user_id="00000000-0000-0000-0000-000000000000")
 
     # Since we can't easily access the inner node, test the logic directly
     # Get papers from storage
