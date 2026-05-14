@@ -64,7 +64,7 @@ async def get_api_keys(user_id: str) -> APIKeys:
     keys = APIKeys(
         anthropic_key=settings.anthropic_api_key,
         openai_key=settings.openai_api_key,
-        openrouter_key=None,  # No default for OpenRouter
+        openrouter_key=settings.openrouter_api_key,  # Load from environment
     )
 
     # Fetch user keys from database
