@@ -11,46 +11,55 @@
 
 An AI-powered research assistant that combines live academic search (Semantic Scholar, arXiv) with a local canonical corpus to provide cited, synthesized answers to research questions. Built with LangGraph multi-agent orchestration, evaluated with RAGAS metrics, and traced with LangSmith.
 
-**Current Status:** v0.14 - CI/CD Pipeline In Progress 🚧
+**Current Status:** v1.0 - Production Live ✅
+
+## 🚀 Live Deployment
+
+- **Frontend (Web):** <https://multi-agent-research-assistant-nine.vercel.app>
+- **Backend API:** <https://multi-agent-backend-production-a229.up.railway.app>
+- **API Docs:** <https://multi-agent-backend-production-a229.up.railway.app/docs>
+- **Database:** Supabase (managed PostgreSQL + pgvector)
+
+> **Note:** Mobile apps (iOS/Android) require Apple Developer and Google Play Console accounts for deployment.
 
 ## Features
 
-### ✅ Implemented (v0.0 → v0.13)
+### ✅ Implemented (v0.0 → v1.0)
 
 - **Multi-Agent ReAct Pattern** - LangGraph orchestration with tool-calling agent
 - **Hybrid Retrieval** - Combines Semantic Scholar, arXiv, and local pgvector corpus
-- **Cited Synthesis** - Claude Sonnet 4 generates answers with `[1], [2]` inline citations
+- **Cited Synthesis** - LLM generates answers with `[1], [2]` inline citations
 - **SSE Streaming** - Real-time response streaming to frontend
 - **Fault Tolerance** - Graceful degradation when external APIs fail
 - **RAGAS Evaluation** - Automated quality metrics (faithfulness, answer relevancy, context precision)
 - **Manual Rubric** - Citation accuracy, recency, source diversity metrics
 - **LangSmith Tracing** - Full observability with trace URLs logged to database
-- **Cost Tracking** - Token usage and cost calculated per query ($3/1M input, $15/1M output)
+- **Cost Tracking** - Token usage and cost calculated per query
 - **Rate Limiting** - 10 queries/hour per user (configurable)
 - **Budget Alerts** - Triggers at $10/day threshold
 - **Docker Compose** - Single-command local development environment
-
-### 🚧 In Progress
-
-- CI/CD pipeline (v0.14)
-- Multi-provider BYOK (v0.15)
+- **CI/CD Pipeline** - GitHub Actions with automated testing
+- **Multi-Provider BYOK** - Bring Your Own API Keys (Anthropic, OpenAI, OpenRouter)
+- **Production Deployment** - Railway (backend), Vercel (frontend), Supabase (database)
 
 ## Tech Stack
 
 ### Backend
 - **Framework:** FastAPI + Uvicorn
 - **Agent:** LangGraph (ReAct pattern)
-- **LLM:** Claude Sonnet 4 (`claude-sonnet-4-20250514`)
+- **LLM:** Multi-provider (Anthropic Claude, OpenAI, OpenRouter) - configurable via BYOK
 - **Embeddings:** OpenAI `text-embedding-3-small` (1536-dim)
 - **Database:** Supabase (PostgreSQL + pgvector)
 - **Evals:** RAGAS
 - **Tracing:** LangSmith
+- **Deployment:** Railway
 
 ### Frontend
 - **Framework:** Expo (React Native + Web)
 - **Language:** TypeScript
 - **Styling:** NativeWind (Tailwind for React Native)
 - **State:** React hooks (no global state library)
+- **Deployment:** Vercel (web), EAS Build ready (mobile)
 
 ### Academic APIs
 - **Semantic Scholar API** - Citation data, recent papers
@@ -65,9 +74,12 @@ An AI-powered research assistant that combines live academic search (Semantic Sc
 - **OR Manual Setup**: Python 3.11+, Node.js 18+
 - **Supabase account**: Create a project at [supabase.com](https://supabase.com)
 - **API keys**:
-  - Anthropic (Claude) - [console.anthropic.com](https://console.anthropic.com)
-  - OpenAI (embeddings) - [platform.openai.com](https://platform.openai.com)
-  - LangSmith (tracing) - [smith.langchain.com](https://smith.langchain.com)
+  - **LLM Provider** (choose one or more):
+    - Anthropic (Claude) - [console.anthropic.com](https://console.anthropic.com)
+    - OpenRouter (multi-provider, free models available) - [openrouter.ai](https://openrouter.ai)
+    - OpenAI (GPT models) - [platform.openai.com](https://platform.openai.com)
+  - **Embeddings** (required): OpenAI - [platform.openai.com](https://platform.openai.com)
+  - **Tracing** (required): LangSmith - [smith.langchain.com](https://smith.langchain.com)
 
 ### Option 1: Docker Compose (Recommended)
 
@@ -249,11 +261,11 @@ Seeds 5 foundational papers:
 - [x] v0.11b: Evaluation Framework (RAGAS + Manual Rubric)
 - [x] v0.12: LangSmith Integration + Cost Analytics
 - [x] v0.13: Docker Compose Polish
-- [ ] v0.14: CI/CD Pipeline (In Progress)
-- [ ] v0.15: Multi-Provider BYOK
-- [ ] v1.0: Production Live
+- [x] v0.14: CI/CD Pipeline
+- [x] v0.15: Multi-Provider BYOK
+- [x] v1.0: Production Live
 
-See [VERSION_ROADMAP.md](VERSION_ROADMAP.md) for detailed breakdown.
+See [VERSION_ROADMAP.md](VERSION_ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
 ## License
 
