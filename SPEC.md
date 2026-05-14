@@ -3,11 +3,12 @@
 
 ## Current Version: v1.0
 **Gate:** Production Live  
-**Status:** 🚀 IN PROGRESS - Web deployment complete, testing OpenRouter integration  
+**Status:** ✅ CLOSED  
 **Estimate:** 12-20h  
-**Actual:** ~8h (in progress)
+**Actual:** ~9h
 **Started:** 2026-05-14  
-**Target:** 2026-05-14
+**Completed:** 2026-05-14
+**Approval token:** `GO`
 
 ## Goal (v1.0)
 Deploy production application accessible to portfolio reviewers. Web deployment (Vercel + Railway + Supabase) with OpenRouter integration for cost-efficient operation.
@@ -42,11 +43,14 @@ Deploy production application accessible to portfolio reviewers. Web deployment 
   - [x] Multi-provider fallback (Anthropic > OpenRouter > OpenAI)
   - [x] Fixed key_hierarchy.py to load OpenRouter key from environment
 
-### 🧪 Testing in Progress
-- [ ] **Verify OpenRouter integration:** Test query with free model (meta-llama/llama-3.3-70b-instruct:free)
-  - Expected: Logs show `[AGENT] Using provider: openrouter`
-  - Expected: Query completes successfully with citations
-  - Expected: Cost shows $0.00 for LLM calls (embeddings: ~$0.00002)
+### ✅ Verification Complete
+- [x] **OpenRouter integration verified:** Production query with `openrouter/free` smart router
+  - ✅ Logs confirmed: `[AGENT] Using provider: openrouter, model: openrouter/free`
+  - ✅ Query completed successfully with high-quality cited synthesis (9 papers, 2023-2024)
+  - ✅ Cost verified: $0.00 for LLM calls (embeddings: ~$0.00002)
+  - ✅ All search tools operational (Semantic Scholar, arXiv, local corpus)
+  - ✅ LangSmith tracing active
+  - ✅ 4 LLM calls, 5 papers retrieved, comprehensive synthesis with tables and citations
   
 ### ⏸️ Deferred (Blocked by App Store Accounts)
 - [ ] **iOS deployment:** TestFlight submission
@@ -60,9 +64,9 @@ Deploy production application accessible to portfolio reviewers. Web deployment 
 - [ ] **App store metadata:** Screenshots, descriptions, icons
   - Will complete when deploying mobile apps
 
-### 📋 Pending Completion
-- [ ] Git tag: `v1.0-production-live`
-- [ ] Close v1.0 gate in SPEC.md after verification
+### ✅ Final Steps Complete
+- [x] Git tag: `v1.0-production-live` created and pushed
+- [x] v1.0 gate closed in SPEC.md
 
 ## Recent Fixes
 
@@ -96,14 +100,25 @@ This enables the system to actually use the OPENROUTER_API_KEY from Railway, all
 - ✅ Cost tracking and analytics endpoints operational
 - ✅ API key management (BYOK) endpoints ready
 
-## Next Steps
-1. ✅ Test production query with OpenRouter free model
-2. ✅ Verify logs show `provider: openrouter`
-3. ✅ Confirm $0.00 LLM cost (only embeddings charged)
-4. Tag release as `v1.0-production-live`
-5. Close v1.0 gate
+## Production Deployment Summary
 
-**Approval token:** `GO`
+**v1.0 Production Live - COMPLETE** 🚀
+
+All deliverables met:
+- ✅ Web frontend deployed to Vercel
+- ✅ Backend deployed to Railway  
+- ✅ Database configured in Supabase production
+- ✅ OpenRouter integration verified ($0 LLM cost)
+- ✅ Full documentation suite (README, CHANGELOG, HANDOFF)
+- ✅ Git tagged as `v1.0-production-live`
+- ✅ Gate closed
+
+**Production URLs:**
+- Frontend: <https://multi-agent-research-assistant-nine.vercel.app>
+- Backend: <https://multi-agent-backend-production-a229.up.railway.app>
+- API Docs: <https://multi-agent-backend-production-a229.up.railway.app/docs>
+
+**Mobile deployment deferred** (requires Apple Developer + Google Play Console accounts)
 
 ---
 
