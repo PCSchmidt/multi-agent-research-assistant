@@ -31,13 +31,16 @@ async def lifespan(app: FastAPI):
     required_vars = [
         "supabase_url",
         "supabase_key",
-        "anthropic_api_key",
-        "openai_api_key",
+        "openai_api_key",  # Still needed for embeddings
         "langchain_api_key",
     ]
     missing_vars = [var for var in required_vars if not getattr(settings, var, None)]
     if missing_vars:
         raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+    # Validate at least one LLM provider is configured
+    if not any([settings.anthropic_api_key, settings.openrouter_api_key]):
+        raise ValueError("At least one LLM provider required: ANTHROPIC_API_KEY or OPENROUTER_API_KEY")
 
     print("[STARTUP] All required environment variables present")
 
