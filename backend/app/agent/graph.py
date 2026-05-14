@@ -183,37 +183,43 @@ async def create_research_agent(user_id: str) -> StateGraph:
     # Fetch API keys with hierarchy (user keys override defaults)
     api_keys = await get_api_keys(user_id)
 
-    # Select LLM based on available keys (priority: Anthropic > OpenAI > OpenRouter)
+    # Select LLM based on available keys (priority: Anthropic > OpenRouter > OpenAI)
+    # OpenRouter checked before OpenAI to use cheaper/free models when configured
     llm = None
     provider_used = None
 
     if api_keys.anthropic_key:
+        # Extract model name from OpenRouter format (e.g., "anthropic/claude-3.5-haiku" -> "claude-3.5-haiku")
+        model_name = settings.default_model.split("/")[-1] if "/" in settings.default_model else settings.default_model
         llm = ChatAnthropic(
-            model="claude-sonnet-4-20250514",
+            model=model_name,
             api_key=api_keys.anthropic_key,
             temperature=0.1,
         )
         provider_used = "anthropic"
-    elif api_keys.openai_key:
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            api_key=api_keys.openai_key,
-            temperature=0.1,
-        )
-        provider_used = "openai"
     elif api_keys.openrouter_key:
-        # OpenRouter uses OpenAI-compatible API
+        # OpenRouter uses full path (e.g., "google/gemini-2.0-flash-exp:free")
         llm = ChatOpenAI(
-            model="anthropic/claude-sonnet-4",  # OpenRouter model path
+            model=settings.default_model,
             api_key=api_keys.openrouter_key,
             base_url="https://openrouter.ai/api/v1",
             temperature=0.1,
         )
         provider_used = "openrouter"
+    elif api_keys.openai_key:
+        # Extract model name (e.g., "openai/gpt-4o-mini" -> "gpt-4o-mini")
+        model_name = settings.default_model.split("/")[-1] if "/" in settings.default_model else settings.default_model
+        llm = ChatOpenAI(
+            model=model_name,
+            api_key=api_keys.openai_key,
+            temperature=0.1,
+        )
+        provider_used = "openai"
     else:
         raise ValueError("No valid API keys found for any provider")
 
-    print(f"[AGENT] Using provider: {provider_used}")
+    print(f"[AGENT] Using provider: {provider_used}, model: {settings.default_model}")
+
 
     # Bind tools to LLM
     tools = [search_s2_tool, search_arxiv_tool, search_local_tool]
