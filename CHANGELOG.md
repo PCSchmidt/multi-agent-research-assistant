@@ -8,29 +8,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [v1.0] - 2026-05-14 - 🚀 Production Live (IN PROGRESS)
+## [v1.0] - 2026-05-14 - 🚀 Production Live
 
-### In Progress
+### Deployed
 
-- **Production Deployments**
-  - Backend API deployed to Railway
-  - Web frontend deployed to Vercel  
-  - Production Supabase database configuration
-  - Environment variables configured for production
+- **Production Infrastructure**
+  - ✅ Backend API deployed to Railway: <https://multi-agent-backend-production-a229.up.railway.app>
+  - ✅ Web frontend deployed to Vercel: <https://multi-agent-research-assistant-nine.vercel.app>
+  - ✅ Production Supabase database: hdzhvpomcnnwfiirzykl.supabase.co
+  - ✅ 21 environment variables configured in Railway
+  - ✅ 2 database migrations applied (initial schema + user_api_keys)
+  - ✅ CORS configured for cross-origin requests
+  - ✅ Health check endpoint operational
+  
+- **Cost Optimization**
+  - ✅ OpenRouter integration for free/cheap LLM models
+  - ✅ Configurable model selection via DEFAULT_MODEL environment variable
+  - ✅ Smart router support (`openrouter/free` - auto-selects from 26 free models)
+  - ✅ Multi-provider fallback: Anthropic > OpenRouter > OpenAI
+  - ✅ **LLM cost: $0.00 per query** (using OpenRouter free tier)
+  - ✅ Embeddings cost: ~$0.00002 per query (OpenAI text-embedding-3-small)
+  
+- **Critical Fixes**
+  - ✅ Fixed key_hierarchy.py to load OPENROUTER_API_KEY from environment (commit 6f4ca3f)
+  - ✅ Made anthropic_api_key optional in config (allows OpenRouter-only operation)
+  - ✅ Updated provider selection priority to favor OpenRouter for cost efficiency
   
 - **Documentation**
-  - PRODUCTION_SETUP.md: Complete deployment walkthrough
-  - RAILWAY_ENV_VARS.md: Environment variables reference
-  - Database migrations ready for production Supabase
+  - ✅ README.md: Updated with production URLs and v1.0 status
+  - ✅ CHANGELOG.md: Complete version history (v0.0 → v1.0)
+  - ✅ HANDOFF.md: Portfolio case study document
+  - ✅ PRODUCTION_SETUP.md: Complete deployment walkthrough
+  - ✅ RAILWAY_ENV_VARS.md: Environment variables reference
+  - ✅ SPEC.md: Gate specifications and closure notes
+  
+- **Verification**
+  - ✅ Production query tested successfully
+  - ✅ All search tools operational (Semantic Scholar, arXiv, local corpus)
+  - ✅ High-quality synthesis with citations (verified with sparse attention query)
+  - ✅ LangSmith tracing active and logging
+  - ✅ Cost tracking showing $0.00 LLM cost
+  - ✅ Git tagged as v1.0-production-live
 
-### Pending
+### Deferred (Deployment-Ready)
 
-- Mobile app deployments (requires Apple Developer + Google Play accounts)
-- EAS Build configuration for iOS and Android
-- App store assets and metadata
-- Controlled access configuration
-- HANDOFF.md portfolio case study
-- GitHub repo made public
+- 📱 **Mobile App Deployments** (blocked by App Store accounts)
+  - iOS: TestFlight submission ready (requires Apple Developer account - $99/year)
+  - Android: Play Console submission ready (requires Google Play account - $25 one-time)
+  - EAS Build configuration complete (eas.json)
+  - Apps can be deployed when accounts are available
+  
+### Known Issues
+
+- Frontend timeout: 60s limit vs 90-120s backend execution (queries complete successfully, just show timeout warning)
+- RAGAS tests skipped: OpenAIEmbeddings.embed_query deprecation (LangChain version mismatch)
+- Frontend Jest tests failing: React 19 compatibility issue
+
+### Technical Stack
+
+- **Backend:** FastAPI + Uvicorn on Railway
+- **Frontend:** Expo (React Native + Web) on Vercel  
+- **Database:** Supabase (PostgreSQL + pgvector)
+- **LLM:** OpenRouter smart router (26 free models available)
+- **Embeddings:** OpenAI text-embedding-3-small
+- **Agent:** LangGraph ReAct pattern
+- **Evaluation:** RAGAS + manual rubric
+- **Tracing:** LangSmith
+- **Version Control:** Git + GitHub (tagged v1.0-production-live)
 
 ---
 

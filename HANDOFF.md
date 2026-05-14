@@ -535,10 +535,18 @@ export default function SettingsScreen() {
 
 ### Cost
 
-| Metric | Target | Actual | Notes |
-|--------|--------|--------|-------|
-| Cost per query | <$1 | $0.12 avg | Claude Sonnet 4, ~4K input + 600 output tokens |
-| Daily cost (10 users, 5 queries/day) | <$10 | $6 avg | Within budget alert threshold |
+| Metric | Target | Actual (Production) | Notes |
+|--------|--------|---------------------|-------|
+| LLM cost per query | <$1 | **$0.00** | OpenRouter free tier (`openrouter/free` smart router) |
+| Embeddings cost per query | N/A | ~$0.00002 | OpenAI text-embedding-3-small, ~2K tokens |
+| **Total cost per query** | <$1 | **~$0.00002** | 🎯 **99.998% cost reduction via OpenRouter** |
+| Daily cost (10 users, 5 queries/day) | <$10 | ~$0.001 | Essentially free operation |
+
+**Cost Optimization Strategy:**
+- Development/Testing: Used Claude Sonnet 4 (~$0.12 per query)
+- Production: Switched to OpenRouter free tier for zero LLM cost
+- OpenRouter smart router auto-selects from 26 free models (Llama 3.3 70B, DeepSeek V4, Gemma 4, etc.)
+- Only cost is embeddings (OpenAI), which are negligible (~$0.02 per 1,000 queries)
 
 ### Test Coverage
 
@@ -555,20 +563,24 @@ export default function SettingsScreen() {
 ### Deployment Architecture
 
 **Backend (Railway):**
-- **URL:** `https://multi-agent-research-assistant-production.up.railway.app`
+- **URL:** <https://multi-agent-backend-production-a229.up.railway.app>
+- **API Docs:** <https://multi-agent-backend-production-a229.up.railway.app/docs>
 - **Build:** Auto-deploy from `main` branch on GitHub push
 - **Environment:** Python 3.11, Uvicorn ASGI server
 - **Scaling:** Horizontal auto-scaling (Railway built-in)
-- **Secrets:** Environment variables in Railway dashboard (not in git)
+- **Secrets:** 21 environment variables in Railway dashboard (not in git)
+- **LLM Provider:** OpenRouter free tier (`openrouter/free` smart router)
 
 **Frontend (Vercel):**
-- **Web URL:** `https://multi-agent-research-assistant-nine.vercel.app`
-- **iOS/Android:** Expo Application Services (EAS) builds (pending Apple/Google accounts)
-- **Build:** `expo export:web` → static site → Vercel CDN
+- **Web URL:** <https://multi-agent-research-assistant-nine.vercel.app>
+- **iOS/Android:** Expo Application Services (EAS) builds deployment-ready (pending Apple/Google accounts)
+- **Build:** `npx expo export --platform web` → static site → Vercel CDN
+- **Build Command:** `npm ci --omit=dev --legacy-peer-deps` (resolves React 19 peer dependency conflicts)
 - **Environment:** `EXPO_PUBLIC_API_URL` points to Railway backend
+- **Root Directory:** `frontend/`
 
 **Database (Supabase):**
-- **URL:** `https://hdzhvpomcnnwfiirzykl.supabase.co`
+- **Project:** `hdzhvpomcnnwfiirzykl` (<https://hdzhvpomcnnwfiirzykl.supabase.co>)
 - **Tier:** Production (connection pooling, automatic backups)
 - **Migrations:** Run manually in Supabase SQL Editor (2 migrations)
   1. `backend/app/db/migrations/001_initial_schema.sql` (initial schema)
